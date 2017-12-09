@@ -1,7 +1,7 @@
 ksql-python
 ===========
 
-A python wrapper for the KSql REST API. Easily interact with the KSql REST API using this library.
+A python wrapper for the KSQL REST API. Easily interact with the KSQL REST API using this library.
 
 |Build Status|
 
@@ -32,8 +32,8 @@ Setup
 
 .. code:: python
 
-    from ksql import KSqlAPI
-    client = KSqlAPI('http://ksql-server:8080')
+    from ksql import KSQLAPI
+    client = KSQLAPI('http://ksql-server:8080')
 
 Options
 ~~~~~~~
