@@ -18,7 +18,7 @@ if not VERSION:
 here = os.path.dirname(__file__)
 
 # Get long description
-README = open(os.path.join(here, "README.md")).read()
+README = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
 reqs = [str(x.req) for x in parse_requirements(os.path.join(here,'requirements.txt'), session='hack')]
 
