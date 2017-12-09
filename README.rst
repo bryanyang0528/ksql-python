@@ -10,7 +10,13 @@ Installation
 
 .. code:: bash
 
-    git clone ksql-python
+    pip install ksql-python
+
+Or
+
+.. code:: bash
+
+    git clone https://github.com/bryanyang0528/ksql-python
     cd ksql-python
     python setup.py install
 
