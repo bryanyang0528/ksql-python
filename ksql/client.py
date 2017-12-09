@@ -1,7 +1,7 @@
 import json
 import requests
 
-class KSqlAPI(object):
+class KSQLAPI(object):
     """ API Class """
 
     def __init__(self, url, **kwargs):

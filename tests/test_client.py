@@ -4,18 +4,18 @@ import requests
 
 import vcr
 
-from ksql import KSqlAPI
+from ksql import KSQLAPI
 import ksql
 
-class TestKSqlAPI(unittest.TestCase):
+class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
     def setUp(self):
         self.url = "http://ksql-server:8080"
-        self.api_client = KSqlAPI(url=self.url)
+        self.api_client = KSQLAPI(url=self.url)
 
     def test_with_timeout(self):
-        api_client = KSqlAPI(url='http://foo', timeout=10)
+        api_client = KSQLAPI(url='http://foo', timeout=10)
         self.assertEquals(api_client.timeout, 10)
 
     @vcr.use_cassette('tests/vcr_cassettes/get_ksql_server.yml')
