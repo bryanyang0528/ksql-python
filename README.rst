@@ -10,7 +10,7 @@ Installation
 
 .. code:: bash
 
-    pip install ksql-python
+    pip install ksql
 
 Or
 
