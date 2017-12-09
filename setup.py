@@ -20,7 +20,9 @@ here = os.path.dirname(__file__)
 # Get long description
 README = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
-reqs = [str(x.req) for x in parse_requirements(os.path.join(here,'requirements.txt'), session='hack')]
+reqs = ['requests',
+        'six',
+        'urllib3']
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
