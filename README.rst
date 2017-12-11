@@ -3,7 +3,8 @@ ksql-python
 
 A python wrapper for the KSQL REST API. Easily interact with the KSQL REST API using this library.
 
-|Build Status|
+.. image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
+  :target: https://travis-ci.org/bryanyang0528/ksql-python
 
 .. image:: https://codecov.io/gh/bryanyang0528/ksql-python/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/bryanyang0528/ksql-python
