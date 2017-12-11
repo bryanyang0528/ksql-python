@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = ksql
+
+[report]
+include = 
+    ksql/*
+    tests/*
