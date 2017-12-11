@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 import json
 import requests
 
@@ -24,7 +27,6 @@ class KSQLAPI(object):
         url = '{}/{}'.format(self.url, endpoint)
 
         sql_string = self.__validate_sql_string(sql_string) 
-        print(sql_string)
         data = json.dumps({
             "ksql": sql_string
         })
