@@ -82,3 +82,34 @@ It will execute sql query and keep listening streaming data.
 
 .. |Build Status| image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
    :target: https://travis-ci.org/bryanyang0528/ksql-python
+
+
+Simplified API
+~~~~~~~~~~~~~~  
+
+create_stream/ create_table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    client.create_stream(table_name=table_name, 
+                         columns_type=columns_type, 
+                         topic=topic, 
+                         value_format=value_format)
+
+Options
+^^^^^^^
+
++-----------------+-----------+----------+--------------------------------------------------------------+
+| Option          | Type      | Required | scription                                                    s|
++=================+===========+==========+==============================================================+
+| ``table_name``  | string    | yes      | Your ksql-server url. Example: ``http://ksql-server:8080``   |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``columns_type``| list      | yes      | ex:``['viewtime bigint','userid varchar','pageid varchar']`` |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``topic``       | string    | yes      | Topic of Kafka                                               |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``value_format``| string    | no       | ``DELIMITED``(Default) or ``JSON``                           |
++-----------------+-----------+----------+--------------------------------------------------------------+
+
+-  Example Response ``[{'tables': {'statementText': 'show tables;', 'tables': []}}]`` 
