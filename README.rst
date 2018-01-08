@@ -80,10 +80,6 @@ It will execute sql query and keep listening streaming data.
        {"row":{"columns":[1512787753488,"key1",1,2,3]},"errorMessage":null}
        {"row":{"columns":[1512787753888,"key1",1,2,3]},"errorMessage":null}
 
-.. |Build Status| image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
-   :target: https://travis-ci.org/bryanyang0528/ksql-python
-
-
 Simplified API
 ~~~~~~~~~~~~~~  
 
@@ -114,9 +110,8 @@ Options
 
 -  Example Response 
 
-.. code:: json
+:True: 
+  If create table/stream succeed.
 
-{string: '[{"currentStatus":{"statementText":"CREATE STREAM test_table (viewtime
-        bigint, userid varchar, pageid varchar) WITH (kafka_topic=''t1'',
-        value_format=''DELIMITED'');","commandId":"stream/TEST_TABLE","commandStatus":{"status":"SUCCESS","message":"Stream
-        created"}}}]'}
+:False: 
+  If failed.
