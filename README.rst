@@ -80,5 +80,38 @@ It will execute sql query and keep listening streaming data.
        {"row":{"columns":[1512787753488,"key1",1,2,3]},"errorMessage":null}
        {"row":{"columns":[1512787753888,"key1",1,2,3]},"errorMessage":null}
 
-.. |Build Status| image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
-   :target: https://travis-ci.org/bryanyang0528/ksql-python
+Simplified API
+~~~~~~~~~~~~~~  
+
+create_stream/ create_table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    client.create_stream(table_name=table_name, 
+                         columns_type=columns_type, 
+                         topic=topic, 
+                         value_format=value_format)
+
+Options
+^^^^^^^
+
++-----------------+-----------+----------+--------------------------------------------------------------+
+| Option          | Type      | Required | Description                                                  |
++=================+===========+==========+==============================================================+
+| ``table_name``  | string    | yes      | Your ksql-server url. Example: ``http://ksql-server:8080``   |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``columns_type``| list      | yes      | ex:``['viewtime bigint','userid varchar','pageid varchar']`` |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``topic``       | string    | yes      | Kafka topic                                                  |
++-----------------+-----------+----------+--------------------------------------------------------------+
+| ``value_format``| string    | no       | ``DELIMITED``(Default) or ``JSON``                           |
++-----------------+-----------+----------+--------------------------------------------------------------+
+
+-  Example Response 
+
+:True: 
+  If create table/stream succeed.
+
+:False: 
+  If failed.
