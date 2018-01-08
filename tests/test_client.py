@@ -5,7 +5,7 @@ import requests
 import vcr
 
 from ksql import KSQLAPI
-import ksql
+from ksql import SQLBuilder
 
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
@@ -38,11 +38,49 @@ class TestKSQLAPI(unittest.TestCase):
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r, [{'tables': {'statementText': 'show tables;', 'tables': []}}])
 
-    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_table.yml')
-    def test_ksql_create_table(self):
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream.yml')
+    def test_ksql_create_stream(self):
         """ Test GET requests """
         ksql_string = "CREATE STREAM test_table (viewtime bigint, userid varchar, pageid varchar) \
                        WITH (kafka_topic='t1', value_format='DELIMITED');"
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['currentStatus']['commandStatus']['status'], 'SUCCESS')
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream.yml')
+    def test_ksql_create_stream_by_builder(self):
+        sql_type = 'create'
+        table_type = 'stream'
+        table_name = 'test_table'
+        columns_type = ['viewtime bigint',
+                        'userid varchar',
+                        'pageid varchar']
+        topic = 't1'
+        value_format = 'DELIMITED'
+        
+        ksql_string = SQLBuilder.build(sql_type = sql_type, 
+                                      table_type = table_type, 
+                                      table_name = table_name, 
+                                      columns_type = columns_type, 
+                                      topic = topic, 
+                                      value_format = value_format)
+
+        r = self.api_client.ksql(ksql_string)
+        self.assertEqual(r[0]['currentStatus']['commandStatus']['status'], 'SUCCESS')
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream.yml')
+    def test_ksql_create_stream_by_builder_api(self):
+        table_name = 'test_table'
+        columns_type = ['viewtime bigint',
+                        'userid varchar',
+                        'pageid varchar']
+        topic = 't1'
+        value_format = 'DELIMITED'
+        
+        r = self.api_client.create_stream(table_name = table_name, 
+                                      columns_type = columns_type, 
+                                      topic = topic, 
+                                      value_format = value_format)
+        self.assertEqual(r[0]['currentStatus']['commandStatus']['status'], 'SUCCESS')
+
+
 
