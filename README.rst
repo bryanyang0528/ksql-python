@@ -114,7 +114,7 @@ Options
 
 -  Example Response 
 
-.. code:: python
+.. code:: json
 
 {string: '[{"currentStatus":{"statementText":"CREATE STREAM test_table (viewtime
         bigint, userid varchar, pageid varchar) WITH (kafka_topic=''t1'',
