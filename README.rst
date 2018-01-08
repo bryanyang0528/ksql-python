@@ -112,7 +112,10 @@ Options
 | ``value_format``| string    | no       | ``DELIMITED``(Default) or ``JSON``                           |
 +-----------------+-----------+----------+--------------------------------------------------------------+
 
--  Example Response ``{string: '[{"currentStatus":{"statementText":"CREATE STREAM test_table (viewtime
+-  Example Response 
+```
+{string: '[{"currentStatus":{"statementText":"CREATE STREAM test_table (viewtime
         bigint, userid varchar, pageid varchar) WITH (kafka_topic=''t1'',
         value_format=''DELIMITED'');","commandId":"stream/TEST_TABLE","commandStatus":{"status":"SUCCESS","message":"Stream
-        created"}}}]'}`` 
+        created"}}}]'}
+``` 
