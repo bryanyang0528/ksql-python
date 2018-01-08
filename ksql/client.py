@@ -81,22 +81,31 @@ class KSQLAPI(object):
                 print(chunk.decode(encoding))
 
     def create_stream(self, table_name, columns_type, topic, value_format):
-        ksql_string = SQLBuilder.build(sql_type = 'create', 
-                                      table_type = 'stream', 
-                                      table_name = table_name, 
-                                      columns_type = columns_type, 
-                                      topic = topic, 
-                                      value_format = value_format)
-        r = self.ksql(ksql_string)
-        return r
+        return self._create_stream_table(table_type='stream', 
+                                    table_name = table_name, 
+                                    columns_type = columns_type, 
+                                    topic = topic, 
+                                    value_format = value_format)
 
     def create_table(self, table_name, columns_type, topic, value_format):
+        return self._create_stream_table(table_type='table', 
+                                    table_name = table_name, 
+                                    columns_type = columns_type, 
+                                    topic = topic, 
+                                    value_format = value_format)
+
+
+    def _create_stream_table(self, table_type, table_name, columns_type, topic, value_format):
         ksql_string = SQLBuilder.build(sql_type = 'create', 
-                                      table_type = 'table', 
+                                      table_type = table_type, 
                                       table_name = table_name, 
                                       columns_type = columns_type, 
                                       topic = topic, 
                                       value_format = value_format)
         r = self.ksql(ksql_string)
-        return r 
+        r = r[0]['currentStatus']['commandStatus']['status']
+        if r == 'SUCCESS':
+            return True
+        else:
+            return False
 
