@@ -4,6 +4,9 @@ from __future__ import print_function
 import json
 import requests
 
+from ksql.builder import SQLBuilder
+
+
 class KSQLAPI(object):
     """ API Class """
 
@@ -23,10 +26,10 @@ class KSQLAPI(object):
         else:
             raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
 
-    def __request(self, endpoint, method='post', sql_string=''):
+    def _request(self, endpoint, method='post', sql_string=''):
         url = '{}/{}'.format(self.url, endpoint)
 
-        sql_string = self.__validate_sql_string(sql_string) 
+        sql_string = self._validate_sql_string(sql_string) 
         data = json.dumps({
             "ksql": sql_string
         })
@@ -51,14 +54,14 @@ class KSQLAPI(object):
         return r  
 
     @staticmethod
-    def __validate_sql_string(sql_string):
+    def _validate_sql_string(sql_string):
         if len(sql_string) > 0:
             if sql_string[-1] != ';':
                 sql_string += ';'
         return sql_string
 
     def ksql(self, ksql_string):
-        r = self.__request(endpoint='ksql', sql_string=ksql_string)
+        r = self._request(endpoint='ksql', sql_string=ksql_string)
 
         if r.status_code == 200:
             r = r.json()
@@ -71,8 +74,29 @@ class KSQLAPI(object):
         Process streaming incoming data.
 
         """
-        r = self.__request(endpoint='query', sql_string=query_string)
+        r = self._request(endpoint='query', sql_string=query_string)
 
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
                 print(chunk.decode(encoding))
+
+    def create_stream(self, table_name, columns_type, topic, value_format):
+        ksql_string = SQLBuilder.build(sql_type = 'create', 
+                                      table_type = 'stream', 
+                                      table_name = table_name, 
+                                      columns_type = columns_type, 
+                                      topic = topic, 
+                                      value_format = value_format)
+        r = self.ksql(ksql_string)
+        return r
+
+    def create_table(self, table_name, columns_type, topic, value_format):
+        ksql_string = SQLBuilder.build(sql_type = 'create', 
+                                      table_type = 'table', 
+                                      table_name = table_name, 
+                                      columns_type = columns_type, 
+                                      topic = topic, 
+                                      value_format = value_format)
+        r = self.ksql(ksql_string)
+        return r 
+
