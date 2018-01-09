@@ -5,6 +5,7 @@ import json
 import requests
 
 from ksql.builder import SQLBuilder
+from ksql.error import CreateError
 
 
 class KSQLAPI(object):
@@ -103,9 +104,14 @@ class KSQLAPI(object):
                                       topic = topic, 
                                       value_format = value_format)
         r = self.ksql(ksql_string)
-        r = r[0]['currentStatus']['commandStatus']['status']
+
+        if_current_status = r[0].get('currentStatus')
+        if if_current_status:
+            r = r[0]['currentStatus']['commandStatus']['status']
+        else:
+            r = r[0]['error']['errorMessage']['message']
+
         if r == 'SUCCESS':
             return True
         else:
-            return False
-
+            raise CreateError(r)
