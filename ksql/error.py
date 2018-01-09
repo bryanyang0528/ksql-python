@@ -21,3 +21,10 @@ class CreateError(Exception):
 		self.msg = "{}".format(e)
 
 
+class SQLFormatNotImplementError(Exception):
+	pass
+
+class BuildNotImplmentError(Exception):
+	pass
+
+
