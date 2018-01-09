@@ -6,6 +6,7 @@ import vcr
 
 from ksql import KSQLAPI
 from ksql import SQLBuilder
+from ksql.error import CreateError
 
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
@@ -82,6 +83,19 @@ class TestKSQLAPI(unittest.TestCase):
                                       value_format = value_format)
 
         self.assertTrue(r)
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_topic_already_registered.yml')
+    def test_table_already_registered_error(self):
+        table_name = 'foo_table' 
+        columns_type = ['name string', 'age bigint'] 
+        topic = 't1' 
+        value_format = 'DELIMITED'
+
+        with self.assertRaises(CreateError):
+            r = self.api_client.create_stream(table_name = table_name, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
 
 
 
