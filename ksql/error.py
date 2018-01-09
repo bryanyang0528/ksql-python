@@ -13,3 +13,11 @@ class IllegalValueFormatError(Exception):
 
 	def __init__(self, value_format):
 		self.msg = "This value format {} is illegal.".format(value_format)
+
+
+class CreateError(Exception):
+
+	def __init__(self, e):
+		self.msg = "{}".format(e)
+
+
