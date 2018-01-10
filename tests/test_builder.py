@@ -9,9 +9,12 @@ class TestSQLBuilder(unittest.TestCase):
 	create_table_with_key = "CREATE TABLE users_original (registertime bigint, gender varchar, regionid varchar, userid varchar) WITH (kafka_topic='users', value_format='JSON', key='userid');"
 	create_table_without_key = "CREATE TABLE users_original (registertime bigint, gender varchar, regionid varchar, userid varchar) WITH (kafka_topic='users', value_format='JSON');"
 	create_stream_without_key = "CREATE STREAM users_original (registertime bigint, gender varchar, regionid varchar, userid varchar) WITH (kafka_topic='users', value_format='JSON');"
-	create_stream_as_without_key_with_condition = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original WHERE userid like 'User_%' AND pageid like 'Page_%'"	
-	create_stream_as_without_key_without_condition = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original"	
-
+	create_stream_as_with_condition = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original WHERE userid like 'User_%' AND pageid like 'Page_%'"	
+	create_stream_as_with_condition_select_star = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT * FROM pageviews_original WHERE userid like 'User_%' AND pageid like 'Page_%'"	
+	create_stream_as_without_condition = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original"	
+	create_stream_as_without_condition_select_star = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT * FROM pageviews_original"	
+	create_stream_as_with_condition_with_partitions = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', partitions=5, timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original WHERE userid like 'User_%' AND pageid like 'Page_%'"	
+	
 
 	def test_create_table_with_key(self):
 		
@@ -70,11 +73,11 @@ class TestSQLBuilder(unittest.TestCase):
 		
 		self.assertEqual(build_sql_str.lower(), self.create_stream_without_key.lower())
 
-	def test_create_stream_as_without_key_without_condition(self):
+	def test_create_stream_as_without_condition(self):
 		sql_type = 'create_as'
 		table_name = 'pageviews_valid'
 		src_table = 'pageviews_original'
-		target_topic = 'pageviews_valid'
+		kafka_topic = 'pageviews_valid'
 		value_format = 'DELIMITED'
 		select_columns = ['rowtime as logtime', '*']
 		
@@ -82,13 +85,139 @@ class TestSQLBuilder(unittest.TestCase):
 										table_type = 'stream', 
 										table_name = table_name,
 										src_table =   src_table,
-										target_topic = target_topic, 
+										kafka_topic = kafka_topic, 
 										select_columns = select_columns,
 										timestamp='logtime', 
 										value_format = value_format)
 		
 		self.assertEqual(built_sql_str.lower(), 
-			self.create_stream_as_without_key_without_condition.lower())
+			self.create_stream_as_without_condition.lower())
+
+	def test_create_stream_as_without_condition_select_star(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										timestamp='logtime', 
+										value_format = value_format)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_without_condition_select_star.lower())
+
+	def test_create_stream_as_without_condition_select_star_with_blank_list(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = []
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										timestamp='logtime', 
+										value_format = value_format,
+										select_columns = select_columns)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_without_condition_select_star.lower())
+
+	def test_create_stream_as_without_condition_select_star_with_only_star(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = ['*']
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										timestamp='logtime', 
+										value_format = value_format,
+										select_columns = select_columns)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_without_condition_select_star.lower())
+
+	def test_create_stream_as_with_condition(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = ['rowtime as logtime', '*']
+		conditions = "userid like 'User_%' AND pageid like 'Page_%'"
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										select_columns = select_columns,
+										timestamp='logtime', 
+										value_format = value_format,
+										conditions = conditions)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_with_condition.lower())
+
+	def test_create_stream_as_with_condition_double_qoute(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = ['rowtime as logtime', '*']
+		conditions = 'userid like "User_%" AND pageid like "Page_%"'
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										select_columns = select_columns,
+										timestamp='logtime', 
+										value_format = value_format,
+										conditions = conditions)
+
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_with_condition.lower())
+
+	def test_create_stream_as_with_condition_with_partitions(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = ['rowtime as logtime', '*']
+		conditions = "userid like 'User_%' AND pageid like 'Page_%'"
+		paritions = 5
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
+										table_type = 'stream', 
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic, 
+										select_columns = select_columns,
+										timestamp='logtime', 
+										value_format = value_format,
+										conditions = conditions,
+										partitions=paritions)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_with_condition_with_partitions.lower())
 
 	def test_sql_type_error(self):
 		sql_type = 'view'
@@ -146,8 +275,4 @@ class TestSQLBuilder(unittest.TestCase):
 										columns_type = columns_type, 
 										topic = topic, 
 										value_format = value_format)
-
-
-
-		
 

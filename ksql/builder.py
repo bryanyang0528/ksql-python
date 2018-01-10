@@ -22,9 +22,9 @@ class SQLBuilder(object):
 		elif sql_type == 'create_as':
 			sql_builder = CreateAsBuilder(kwargs.pop('table_type'))
 			sql_str = sql_builder.build(table_name = kwargs.pop('table_name'), 
-							  			select_columns = kwargs.pop('select_columns'),
+							  			select_columns = kwargs.pop('select_columns', None),
 							  			src_table = kwargs.pop('src_table'),
-							  			target_topic = kwargs.pop('target_topic'),
+							  			kafka_topic = kwargs.pop('kafka_topic'),
 							  			value_format = kwargs.pop('value_format'),
 							  			partition_by = kwargs.pop('partition_by',''),
 							  			**kwargs)
@@ -39,7 +39,6 @@ class BaseCreateBuilder(object):
 	def __init__(self, table_type, sql_format=None):
 		self.table_types = ['table', 'stream']
 		self.value_formats = ['delimited', 'json']
-		self.properties = ['key', 'timestamp']
 		self.table_type = table_type
 		self.sql_format = sql_format
 
@@ -71,6 +70,8 @@ class CreateBuilder(BaseCreateBuilder):
 	def __init__(self, table_type):
 		str_format = "CREATE {} {} ({}) WITH (kafka_topic='{}', value_format='{}'{});"
 		super(CreateBuilder, self).__init__(table_type, str_format)
+		self.properties = ['kafka_topic', 'value_format', 'key', 'timestamp']
+
 
 	def build(self, table_name, columns_type=[], topic=None, value_format='DELIMITED', key=None):
 		if value_format.lower() not in self.value_formats:
@@ -100,38 +101,41 @@ class CreateAsBuilder(BaseCreateBuilder):
 	def __init__(self, table_type):
 		str_format = "CREATE {} {} WITH (kafka_topic='{}', value_format='{}'{}) AS SELECT {} FROM {} {}"
 		super(CreateAsBuilder, self).__init__(table_type, str_format)
+		self.properties = ['kafka_topic', 'value_format', 'partitions', 'replicas', 'timestamp']
+
 		
-	def build(self, table_name, select_columns, src_table, target_topic=None, 
+	def build(self, table_name, select_columns, src_table, kafka_topic=None, 
 			  value_format='DELIMITED', conditions=[], partition_by='', **kwargs):
 
 		if value_format.lower() not in self.value_formats:
 			raise IllegalValueFormatError(value_format)
 		
-		if not target_topic:
-			target_topic = table_name
+		if not kafka_topic:
+			kafka_topic = table_name
 
 		select_clause = self._build_select_clause(select_columns)
 		where_clause = self._build_where_clause(conditions)
 		properties = self._parsed_with_properties(**kwargs)
-		print(properties)
 
-		sql_str = self.sql_format.format(self.table_type, table_name, target_topic, value_format, properties, select_clause, src_table, where_clause, partition_by)
+		sql_str = self.sql_format.format(self.table_type, table_name, kafka_topic, value_format, properties, select_clause, src_table, where_clause, partition_by)
 		return sql_str.strip()
 
 	@staticmethod
 	def _build_where_clause(conditions):
 		if len(conditions) > 0:
-			where_clause = "where {}".format(conditions)
+			where_clause = "where {}".format(conditions).replace('"','\'')
 			return where_clause
 		else:
 			return ''
 
 	@staticmethod
 	def _build_select_clause(select_columns):
-		if len(select_columns) > 0:
-			return ', '.join(select_columns)
-		else:
-			return '*'
+		select_clause = '*'
+		if select_columns:
+			if len(select_columns) > 0:
+				select_clause = ', '.join(select_columns)
+
+		return select_clause
 
 
 		
