@@ -229,13 +229,13 @@ class TestSQLBuilder(unittest.TestCase):
 		select_columns = ['rowtime as logtime', '*']
 		partition_by = 'logtime'
 		
-		built_sql_str = SQLBuilder.build(sql_type = sql_type, 
-										table_type = 'stream', 
+		built_sql_str = SQLBuilder.build(sql_type = sql_type,
+										table_type = 'stream',
 										table_name = table_name,
 										src_table =   src_table,
-										kafka_topic = kafka_topic, 
+										kafka_topic = kafka_topic,
 										select_columns = select_columns,
-										timestamp='logtime', 
+										timestamp='logtime',
 										value_format = value_format,
 										partition_by = partition_by)
 		
