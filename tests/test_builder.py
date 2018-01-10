@@ -14,6 +14,7 @@ class TestSQLBuilder(unittest.TestCase):
 	create_stream_as_without_condition = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original"	
 	create_stream_as_without_condition_select_star = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT * FROM pageviews_original"	
 	create_stream_as_with_condition_with_partitions = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', partitions=5, timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original WHERE userid like 'User_%' AND pageid like 'Page_%'"	
+	create_stream_as_without_condition_partition_by = "CREATE STREAM pageviews_valid WITH (kafka_topic='pageviews_valid', value_format='DELIMITED', timestamp='logtime') AS SELECT rowtime as logtime, * FROM pageviews_original PARTITION BY logtime"	
 	
 
 	def test_create_table_with_key(self):
@@ -218,6 +219,28 @@ class TestSQLBuilder(unittest.TestCase):
 		
 		self.assertEqual(built_sql_str.lower(), 
 			self.create_stream_as_with_condition_with_partitions.lower())
+
+	def test_create_stream_as_without_condition_partition_by(self):
+		sql_type = 'create_as'
+		table_name = 'pageviews_valid'
+		src_table = 'pageviews_original'
+		kafka_topic = 'pageviews_valid'
+		value_format = 'DELIMITED'
+		select_columns = ['rowtime as logtime', '*']
+		partition_by = 'logtime'
+		
+		built_sql_str = SQLBuilder.build(sql_type = sql_type,
+										table_type = 'stream',
+										table_name = table_name,
+										src_table =   src_table,
+										kafka_topic = kafka_topic,
+										select_columns = select_columns,
+										timestamp='logtime',
+										value_format = value_format,
+										partition_by = partition_by)
+		
+		self.assertEqual(built_sql_str.lower(), 
+			self.create_stream_as_without_condition_partition_by.lower())
 
 	def test_sql_type_error(self):
 		sql_type = 'view'

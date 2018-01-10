@@ -1,3 +1,4 @@
+import re
 
 from six import string_types
 
@@ -26,7 +27,7 @@ class SQLBuilder(object):
 							  			src_table = kwargs.pop('src_table'),
 							  			kafka_topic = kwargs.pop('kafka_topic'),
 							  			value_format = kwargs.pop('value_format'),
-							  			partition_by = kwargs.pop('partition_by',''),
+							  			partition_by = kwargs.pop('partition_by', None),
 							  			**kwargs)
 
 		else:
@@ -99,13 +100,13 @@ class CreateBuilder(BaseCreateBuilder):
 
 class CreateAsBuilder(BaseCreateBuilder):
 	def __init__(self, table_type):
-		str_format = "CREATE {} {} WITH (kafka_topic='{}', value_format='{}'{}) AS SELECT {} FROM {} {}"
+		str_format = "CREATE {} {} WITH (kafka_topic='{}', value_format='{}'{}) AS SELECT {} FROM {} {} {}"
 		super(CreateAsBuilder, self).__init__(table_type, str_format)
 		self.properties = ['kafka_topic', 'value_format', 'partitions', 'replicas', 'timestamp']
 
 		
 	def build(self, table_name, select_columns, src_table, kafka_topic=None, 
-			  value_format='DELIMITED', conditions=[], partition_by='', **kwargs):
+			  value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
 
 		if value_format.lower() not in self.value_formats:
 			raise IllegalValueFormatError(value_format)
@@ -113,12 +114,25 @@ class CreateAsBuilder(BaseCreateBuilder):
 		if not kafka_topic:
 			kafka_topic = table_name
 
+		select_clause, where_clause, partition_by_clause, properties = \
+			self._build_clauses(select_columns, conditions, partition_by, **kwargs)
+
+		sql_str = self.sql_format.format(self.table_type, table_name, 
+										kafka_topic, value_format, properties, 
+										select_clause, src_table, where_clause, 
+										partition_by_clause)
+
+		clean_sql_str = re.sub( '\s+', ' ', sql_str).strip()
+
+		return clean_sql_str
+
+	def _build_clauses(self, select_columns, conditions, partition_by, **kwargs):
 		select_clause = self._build_select_clause(select_columns)
 		where_clause = self._build_where_clause(conditions)
+		partition_by_clause = self._build_partition_by_clause(partition_by)
 		properties = self._parsed_with_properties(**kwargs)
 
-		sql_str = self.sql_format.format(self.table_type, table_name, kafka_topic, value_format, properties, select_clause, src_table, where_clause, partition_by)
-		return sql_str.strip()
+		return select_clause, where_clause, partition_by_clause, properties
 
 	@staticmethod
 	def _build_where_clause(conditions):
@@ -137,5 +151,11 @@ class CreateAsBuilder(BaseCreateBuilder):
 
 		return select_clause
 
+	@staticmethod
+	def _build_partition_by_clause(partition_by):
+		if partition_by:
+			return 'PARTITION BY {}'.format(partition_by)
+		else:
+			return ''
 
 		
