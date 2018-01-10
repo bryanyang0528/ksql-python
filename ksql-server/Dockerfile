@@ -1,4 +1,4 @@
-FROM confluentinc/ksql-cli:0.2
+FROM confluentinc/ksql-cli:0.3
 LABEL maintainer="bryan.yang@vpon.com"
 
 RUN apt update && apt install -y supervisor &&\
