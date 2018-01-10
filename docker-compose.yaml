@@ -80,6 +80,4 @@ services:
     environment:
       KSQL_SERVER: ksql-server:8080
       STREAMS_BOOTSTRAP_SERVERS: kafka:29092
-    volumes:
-      - /Users/bryan.yang/Documents/workspace/ksql-python:/app
     command: tail -f /dev/null
