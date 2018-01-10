@@ -39,7 +39,7 @@ class SQLBuilder(object):
 class BaseCreateBuilder(object):
 	def __init__(self, table_type, sql_format=None):
 		self.table_types = ['table', 'stream']
-		self.value_formats = ['delimited', 'json']
+		self.value_formats = ['delimited', 'json', 'avro']
 		self.table_type = table_type
 		self.sql_format = sql_format
 
