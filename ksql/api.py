@@ -3,6 +3,7 @@ import json
 import time
 
 import requests
+from  requests import Timeout
 
 from ksql.builder import SQLBuilder
 from ksql.error import CreateError
@@ -159,7 +160,7 @@ class SimplifiedAPI(BaseAPI):
         r = self.ksql(ksql_string)
         return self._parse_ksql_res(r, CreateError)
 
-    @BaseAPI.retry(exceptions=(TimeoutError, CreateError))
+    @BaseAPI.retry(exceptions=(Timeout, CreateError))
     def _create_as(self, table_type, table_name, select_columns, src_table, kafka_topic=None, 
                    value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
         ksql_string = SQLBuilder.build(sql_type='create_as',
