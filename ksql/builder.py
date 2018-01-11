@@ -122,9 +122,9 @@ class CreateAsBuilder(BaseCreateBuilder):
 										select_clause, src_table, where_clause, 
 										partition_by_clause)
 
-		clean_sql_str = re.sub( '\s+', ' ', sql_str).strip()
+		cleaned_sql_str = re.sub( '\s+', ' ', sql_str).strip()
 
-		return clean_sql_str
+		return cleaned_sql_str
 
 	def _build_clauses(self, select_columns, conditions, partition_by, **kwargs):
 		select_clause = self._build_select_clause(select_columns)
@@ -157,5 +157,3 @@ class CreateAsBuilder(BaseCreateBuilder):
 			return 'PARTITION BY {}'.format(partition_by)
 		else:
 			return ''
-
-		
