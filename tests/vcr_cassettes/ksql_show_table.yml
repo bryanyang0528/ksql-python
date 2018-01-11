@@ -14,7 +14,7 @@ interactions:
     body: {string: '[{"tables":{"statementText":"show tables;","tables":[]}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Fri, 08 Dec 2017 12:14:41 GMT']
+      Date: ['Thu, 11 Jan 2018 03:44:40 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

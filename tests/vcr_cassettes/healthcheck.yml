@@ -9,10 +9,10 @@ interactions:
     method: GET
     uri: http://ksql-server:8080/
   response:
-    body: {string: '{"KSQL Server Info":{"version":"0.2"}}'}
+    body: {string: '{"KSQL Server Info":{"version":"0.3"}}'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 09 Jan 2018 15:54:44 GMT']
+      Date: ['Thu, 11 Jan 2018 03:44:40 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1
