@@ -1,4 +1,4 @@
-FROM confluentinc/ksql-cli:0.2
+FROM confluentinc/ksql-cli:0.3
 LABEL maintainer="bryan.yang@vpon.com"
 
 RUN apt update && apt install -y supervisor &&\
@@ -6,5 +6,6 @@ RUN apt update && apt install -y supervisor &&\
 
 COPY ./conf/ksql-server.conf /etc/supervisor/conf.d
 COPY ./conf/ksqlserver.properties /etc/ksql/
+COPY ./startup.sh .
 
-CMD ["/usr/bin/supervisord", "-n"]
+ENTRYPOINT ["./startup.sh"]
