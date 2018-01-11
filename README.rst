@@ -110,8 +110,8 @@ Options
 
 -  Example Response 
 
-:True: 
-  If create table/stream succeed.
+:If create table/stream succeed: 
+  True
 
-:False: 
-  If failed.
+:If failed: 
+  CreatError(respose_from_ksql_server).
