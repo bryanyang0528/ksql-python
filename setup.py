@@ -7,13 +7,8 @@ import re
 from setuptools import setup
 from pip.req import parse_requirements
 
-import ksql
-
 # Get version from __init__.py file
-VERSION = ksql.__version__
-
-if not VERSION:
-    raise RuntimeError("Cannot find version information")
+VERSION = "0.3.0.2.22"
 
 here = os.path.dirname(__file__)
 
