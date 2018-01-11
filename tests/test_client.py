@@ -1,6 +1,7 @@
 import json
 import unittest
 import requests
+from copy import copy
 
 import vcr
 
@@ -15,6 +16,7 @@ class TestKSQLAPI(unittest.TestCase):
     def setUp(self):
         self.url = "http://ksql-server:8080"
         self.api_client = KSQLAPI(url=self.url)
+        self.exist_topic = 'exist_topic'
 
     def test_with_timeout(self):
         api_client = KSQLAPI(url='http://foo', timeout=10)
@@ -49,8 +51,9 @@ class TestKSQLAPI(unittest.TestCase):
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream.yml')
     def test_ksql_create_stream(self):
         """ Test GET requests """
+        topic = self.exist_topic
         ksql_string = "CREATE STREAM test_table (viewtime bigint, userid varchar, pageid varchar) \
-                       WITH (kafka_topic='t1', value_format='DELIMITED');"
+                       WITH (kafka_topic='{}', value_format='DELIMITED');".format(topic)
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['currentStatus']['commandStatus']['status'], 'SUCCESS')
 
@@ -62,7 +65,7 @@ class TestKSQLAPI(unittest.TestCase):
         columns_type = ['viewtime bigint',
                         'userid varchar',
                         'pageid varchar']
-        topic = 't1'
+        topic = self.exist_topic
         value_format = 'DELIMITED'
         
         ksql_string = SQLBuilder.build(sql_type = sql_type, 
@@ -81,7 +84,7 @@ class TestKSQLAPI(unittest.TestCase):
         columns_type = ['viewtime bigint',
                         'userid varchar',
                         'pageid varchar']
-        topic = 't1'
+        topic = self.exist_topic
         value_format = 'DELIMITED'
         
         r = self.api_client.create_stream(table_name = table_name, 
@@ -95,8 +98,13 @@ class TestKSQLAPI(unittest.TestCase):
     def test_table_already_registered_error(self):
         table_name = 'foo_table' 
         columns_type = ['name string', 'age bigint'] 
-        topic = 't1' 
+        topic = self.exist_topic 
         value_format = 'DELIMITED'
+
+        r = self.api_client.create_stream(table_name = table_name, 
+                                      columns_type = columns_type, 
+                                      topic = topic, 
+                                      value_format = value_format)
 
         with self.assertRaises(CreateError):
             r = self.api_client.create_stream(table_name = table_name, 
