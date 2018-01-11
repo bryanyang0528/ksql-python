@@ -95,7 +95,7 @@ class TestKSQLAPI(unittest.TestCase):
         self.assertTrue(r)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_topic_already_registered.yml')
-    def test_table_already_registered_error(self):
+    def test_raise_create_error_topic_already_registered(self):
         table_name = 'foo_table' 
         columns_type = ['name string', 'age bigint'] 
         topic = self.exist_topic 
@@ -112,5 +112,137 @@ class TestKSQLAPI(unittest.TestCase):
                                               topic = topic, 
                                               value_format = value_format)
 
+    @vcr.use_cassette('tests/vcr_cassettes/raise_create_error_no_topic.yml')
+    def test_raise_create_error_no_topic(self):
+        table_name = 'foo_table' 
+        columns_type = ['name string', 'age bigint'] 
+        topic = 'this_topic_is_not_exist' 
+        value_format = 'DELIMITED'
 
+        with self.assertRaises(CreateError):
+            r = self.api_client.create_stream(table_name = table_name, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_without_conditions.yml')
+    def test_create_stream_as_without_conditions(self):
+        
+        src_table = 'pageviews_original'
+        columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
+        topic = self.exist_topic
+
+        table_name = 'create_stream_as_without_conditions'
+        kafka_topic = 'create_stream_as_without_conditions'
+        value_format = 'DELIMITED'
+        select_columns = ['rowtime as logtime', '*']
+
+        try: 
+            r = self.api_client.create_stream(table_name = src_table, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
+        except CreateError as e:
+            pass
+
+        r = self.api_client.create_stream_as(table_name = table_name,
+                                             src_table =   src_table,
+                                             kafka_topic = kafka_topic, 
+                                             select_columns = select_columns,
+                                             timestamp='logtime', 
+                                             value_format = value_format)
+        self.assertTrue(r)
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_without_startwith.yml')
+    def test_create_stream_as_with_conditions_without_startwith(self):
+        
+        src_table = 'pageviews_original'
+        columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
+        topic = self.exist_topic
+
+        table_name = 'create_stream_as_with_conditions_without_startwith'
+        kafka_topic = 'create_stream_as_with_conditions_without_startwith'
+        value_format = 'DELIMITED'
+        select_columns = ['rowtime as logtime', '*']
+        conditions = "userid = 'foo'"
+
+        try: 
+            r = self.api_client.create_stream(table_name = src_table, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
+        except CreateError as e:
+            pass
+
+        r = self.api_client.create_stream_as(table_name=table_name,
+                                             src_table=src_table,
+                                             kafka_topic=kafka_topic, 
+                                             select_columns=select_columns,
+                                             timestamp='logtime', 
+                                             value_format=value_format,
+                                             conditions=conditions)
+
+        self.assertTrue(r)
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_with_startwith.yml')
+    def test_create_stream_as_with_conditions_with_startwith(self):
+        
+        src_table = 'pageviews_original'
+        columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
+        topic = self.exist_topic
+
+        table_name = 'create_stream_as_with_conditions_with_startwith'
+        kafka_topic = 'create_stream_as_with_conditions_with_startwith'
+        value_format = 'DELIMITED'
+        select_columns = ['rowtime as logtime', '*']
+        conditions = "userid = 'foo_%'"
+
+        try: 
+            r = self.api_client.create_stream(table_name = src_table, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
+        except CreateError as e:
+            pass
+
+        r = self.api_client.create_stream_as(table_name=table_name,
+                                             src_table=src_table,
+                                             kafka_topic=kafka_topic, 
+                                             select_columns=select_columns,
+                                             timestamp='logtime', 
+                                             value_format=value_format,
+                                             conditions=conditions)
+
+        self.assertTrue(r)
+
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_with_startwith_with_and.yml')
+    def test_create_stream_as_with_conditions_with_startwith_with_and(self):
+        
+        src_table = 'pageviews_original'
+        columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
+        topic = self.exist_topic
+
+        table_name = 'create_stream_as_with_conditions_with_startwith_with_and'
+        kafka_topic = 'create_stream_as_with_conditions_with_startwith_with_and'
+        value_format = 'DELIMITED'
+        select_columns = ['rowtime as logtime', '*']
+        conditions = "userid = 'foo_%' and age > 10"
+
+        try: 
+            r = self.api_client.create_stream(table_name = src_table, 
+                                              columns_type = columns_type, 
+                                              topic = topic, 
+                                              value_format = value_format)
+        except CreateError as e:
+            pass
+
+        r = self.api_client.create_stream_as(table_name=table_name,
+                                             src_table=src_table,
+                                             kafka_topic=kafka_topic, 
+                                             select_columns=select_columns,
+                                             timestamp='logtime', 
+                                             value_format=value_format,
+                                             conditions=conditions)
+
+        self.assertTrue(r)
 
