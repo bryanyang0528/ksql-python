@@ -108,10 +108,12 @@ Options
 | ``value_format``| string    | no       | ``DELIMITED``(Default) or ``JSON``                           |
 +-----------------+-----------+----------+--------------------------------------------------------------+
 
--  Example Response 
+-  Responses 
+:Situation:
+  Response  
 
 :If create table/stream succeed: 
-  True
+  return True
 
 :If failed: 
-  CreatError(respose_from_ksql_server).
+  raise a CreatError(respose_from_ksql_server)
