@@ -1,22 +1,24 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import json
 import requests
 
-from ksql.builder import SQLBuilder
-from ksql.error import CreateError
+from ksql.api import SimplifiedAPI
 
 
 class KSQLAPI(object):
     """ API Class """
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, max_retries=3, **kwargs):
         self.url = url
-        self.timeout = kwargs.get("timeout", 5)
+        self.sa = SimplifiedAPI(url, max_retries=max_retries, **kwargs)
 
     def get_url(self):
         return self.url
+
+    @property
+    def timeout(self):
+        return self.sa.get_timout()
 
     def get_ksql_version(self):
         r = requests.get(self.url)
@@ -27,91 +29,33 @@ class KSQLAPI(object):
         else:
             raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
 
-    def _request(self, endpoint, method='post', sql_string=''):
-        url = '{}/{}'.format(self.url, endpoint)
-
-        sql_string = self._validate_sql_string(sql_string) 
-        data = json.dumps({
-            "ksql": sql_string
-        })
-        
-        headers = {
-            "Content-Type": "application/json"
-        }
-        
-        if endpoint == 'query':
-            stream = True
-        else:
-            stream = False
-
-        r = requests.request(
-            method=method,
-            url=url,
-            data=data,
-            timeout=self.timeout,
-            headers=headers,
-            stream=stream)  
-
-        return r  
-
-    @staticmethod
-    def _validate_sql_string(sql_string):
-        if len(sql_string) > 0:
-            if sql_string[-1] != ';':
-                sql_string += ';'
-        return sql_string
-
     def ksql(self, ksql_string):
-        r = self._request(endpoint='ksql', sql_string=ksql_string)
-
-        if r.status_code == 200:
-            r = r.json()
-            return r
-        else: 
-            raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
-
+        return self.sa.ksql(ksql_string)
+        
     def query(self, query_string, encoding='utf-8', chunk_size=128):
-        """  
-        Process streaming incoming data.
-
-        """
-        r = self._request(endpoint='query', sql_string=query_string)
-
-        for chunk in r.iter_content(chunk_size=chunk_size):
-            if chunk != b'\n':
-                print(chunk.decode(encoding))
+        self.sa.query(query_string=query_string, 
+                       encoding=encoding, 
+                       chunk_size=chunk_size)
 
     def create_stream(self, table_name, columns_type, topic, value_format):
-        return self._create_stream_table(table_type='stream', 
-                                    table_name = table_name, 
+        return self.sa.create_stream(table_name = table_name, 
                                     columns_type = columns_type, 
                                     topic = topic, 
                                     value_format = value_format)
 
     def create_table(self, table_name, columns_type, topic, value_format):
-        return self._create_stream_table(table_type='table', 
-                                    table_name = table_name, 
+        return self.sa.create_table(table_name = table_name, 
                                     columns_type = columns_type, 
                                     topic = topic, 
                                     value_format = value_format)
 
-
-    def _create_stream_table(self, table_type, table_name, columns_type, topic, value_format):
-        ksql_string = SQLBuilder.build(sql_type = 'create', 
-                                      table_type = table_type, 
-                                      table_name = table_name, 
-                                      columns_type = columns_type, 
-                                      topic = topic, 
-                                      value_format = value_format)
-        r = self.ksql(ksql_string)
-
-        if_current_status = r[0].get('currentStatus')
-        if if_current_status:
-            r = r[0]['currentStatus']['commandStatus']['status']
-        else:
-            r = r[0]['error']['errorMessage']['message']
-
-        if r == 'SUCCESS':
-            return True
-        else:
-            raise CreateError(r)
+    def create_stream_as(self, table_name, select_columns, src_table, kafka_topic=None, 
+              value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
+        return self.sa.create_stream_as(table_name=table_name,
+                                        select_columns=select_columns,
+                                        src_table=src_table,
+                                        kafka_topic=kafka_topic,
+                                        value_format=value_format,
+                                        conditions=conditions,
+                                        partition_by=partition_by,
+                                        **kwargs)
