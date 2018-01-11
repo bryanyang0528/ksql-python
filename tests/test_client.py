@@ -4,6 +4,7 @@ import requests
 
 import vcr
 
+import ksql
 from ksql import KSQLAPI
 from ksql import SQLBuilder
 from ksql.error import CreateError
@@ -29,7 +30,7 @@ class TestKSQLAPI(unittest.TestCase):
     def test_get_ksql_version_success(self):
         """ Test GET requests """
         version = self.api_client.get_ksql_version()
-        self.assertEqual(version, '0.2')
+        self.assertEqual(version, ksql.__ksql_server_version__)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_show_table.yml')
     def test_ksql_show_tables(self):
