@@ -162,7 +162,7 @@ Options
 +-------------------+-----------+----------+--------------------------------------------------------------+
 | ``partition_by``  | string    | no       | Data will be distributed across partitions by this column.   |
 +-------------------+-----------+----------+--------------------------------------------------------------+
-| ``kwargs``        | string    | no       | please see more options                                      |
+| ``kwargs``        | pair      | no       | please provide ``key=value`` pairs. Please see more options. |
 +-------------------+-----------+----------+--------------------------------------------------------------+
 
 More Options
@@ -170,7 +170,7 @@ More Options
 
 There are more properties (partitions, replicas, etc...) in the official document. 
 
-`ksql syntax reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
+`KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
 
 -  Responses 
 
