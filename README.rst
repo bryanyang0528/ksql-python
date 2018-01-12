@@ -149,7 +149,7 @@ Options
 | Option            | Type      | Required | Description                                                  |
 +===================+===========+==========+==============================================================+
 | ``table_name``    | string    | yes      | name of stream/table                                         |
-+-----------------+-----------+----------+----------------------------------------------------------------+
++-------------------+-----------+----------+--------------------------------------------------------------+
 | ``select_columns``| list      | yes      | you can select ``[*]`` or ``['columnA', 'columnB']``         |
 +-------------------+-----------+----------+--------------------------------------------------------------+
 | ``src_table``     | string    | yes      | name of source table                                         |
@@ -166,10 +166,11 @@ Options
 +-------------------+-----------+----------+--------------------------------------------------------------+
 
 More Options
+^^^^^^^^^^^^
 
 There are more properties (partitions, replicas, etc...) in the official document. 
 
-[ksql syntax reference](https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference)
+`ksql syntax reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
 
 -  Responses 
 
