@@ -99,7 +99,7 @@ Options
 +-----------------+-----------+----------+--------------------------------------------------------------+
 | Option          | Type      | Required | Description                                                  |
 +=================+===========+==========+==============================================================+
-| ``table_name``  | string    | yes      | Your ksql-server url. Example: ``http://ksql-server:8080``   |
+| ``table_name``  | string    | yes      | name of stream/table                                         |
 +-----------------+-----------+----------+--------------------------------------------------------------+
 | ``columns_type``| list      | yes      | ex:``['viewtime bigint','userid varchar','pageid varchar']`` |
 +-----------------+-----------+----------+--------------------------------------------------------------+
@@ -109,8 +109,69 @@ Options
 +-----------------+-----------+----------+--------------------------------------------------------------+
 
 -  Responses 
-:Situation:
-  Response  
+
+:If create table/stream succeed: 
+  return True
+
+:If failed: 
+  raise a CreatError(respose_from_ksql_server)
+
+create_stream_as
+^^^^^^^^^^^^^^^^
+
+a simplified api for creating stream as select
+
+.. code:: python
+
+    client.create_stream_as(table_name=table_name,
+                            select_columns=select_columns,
+                            src_table=src_table,
+                            kafka_topic=kafka_topic,
+                            value_format=value_format,
+                            conditions=conditions,
+                            partition_by=partition_by,
+                            **kwargs)
+
+
+.. code:: sql
+
+  CREATE STREAM <table_name>
+  [WITH ( kafka_topip=<kafka_topic>, value_format=<value_format>, property_name=expression ... )]
+  AS SELECT  <select_columns>
+  FROM <src_table>
+  [WHERE <conditions>]
+  PARTITION BY <partition_by>];
+
+Options
+^^^^^^^
+
++-------------------+-----------+----------+--------------------------------------------------------------+
+| Option            | Type      | Required | Description                                                  |
++===================+===========+==========+==============================================================+
+| ``table_name``    | string    | yes      | name of stream/table                                         |
++-----------------+-----------+----------+----------------------------------------------------------------+
+| ``select_columns``| list      | yes      | you can select ``[*]`` or ``['columnA', 'columnB']``         |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``src_table``     | string    | yes      | name of source table                                         |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``kafka_topic``   | string    | no       | The name of the Kafka topic of this new stream(table).       |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``value_format``  | string    | no       | ``DELIMITED``(Default), ``JSON`` or ``AVRO``                 |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``conditions``    | string    | no       | The conditions in the where clause.                          |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``partition_by``  | string    | no       | Data will be distributed across partitions by this column.   |
++-------------------+-----------+----------+--------------------------------------------------------------+
+| ``kwargs``        | string    | no       | please see more options                                      |
++-------------------+-----------+----------+--------------------------------------------------------------+
+
+More Options
+
+There are more properties (partitions, replicas, etc...) in the official document. 
+
+[ksql syntax reference](https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference)
+
+-  Responses 
 
 :If create table/stream succeed: 
   return True
