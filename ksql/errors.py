@@ -4,10 +4,12 @@ class SQLTypeNotImplementYetError(Exception):
 	def __init__(self, sql_type):
 		self.msg = "This type {} has not be implement yet.".format(sql_type)
 
+
 class IllegalTableTypeError(Exception):
 
 	def __init__(self, table_type):
 		self.msg = "This table type {} is illegal.".format(table_type)
+
 
 class IllegalValueFormatError(Exception):
 
@@ -23,6 +25,7 @@ class CreateError(Exception):
 
 class SQLFormatNotImplementError(Exception):
 	pass
+
 
 class BuildNotImplmentError(Exception):
 	pass

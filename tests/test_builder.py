@@ -1,7 +1,7 @@
 
 import unittest
 from ksql import SQLBuilder
-from ksql.error import SQLTypeNotImplementYetError, \
+from ksql.errors import SQLTypeNotImplementYetError, \
 					   IllegalTableTypeError, \
 					   IllegalValueFormatError
 

@@ -8,7 +8,7 @@ import vcr
 import ksql
 from ksql import KSQLAPI
 from ksql import SQLBuilder
-from ksql.error import CreateError
+from ksql.errors import CreateError
 
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
@@ -246,3 +246,30 @@ class TestKSQLAPI(unittest.TestCase):
 
         self.assertTrue(r)
 
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_wrong_timestamp.yml')
+    def test_ksql_create_stream_as_with_wrong_timestamp(self):
+        src_table = 'prebid_traffic_log_total_stream'
+        columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
+        topic = self.exist_topic
+
+        table_name = 'prebid_traffic_log_valid_stream'
+        kafka_topic = 'prebid_traffic_log_valid_topic'
+        value_format = 'DELIMITED'
+        select_columns = ['*']
+        timestamp = 'foo'
+
+        try:
+            r = self.api_client.create_stream(table_name = src_table,
+                                              columns_type = columns_type,
+                                              topic = topic,
+                                              value_format = value_format)
+        except CreateError as e:
+            pass
+
+        with self.assertRaises(CreateError):
+            r = self.api_client.create_stream_as(table_name=table_name,
+                                                 src_table=src_table,
+                                                 kafka_topic=kafka_topic,
+                                                 select_columns=select_columns,
+                                                 timestamp=timestamp,
+                                                 value_format=value_format)
