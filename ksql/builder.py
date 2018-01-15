@@ -2,7 +2,7 @@ import re
 
 from six import string_types
 
-from ksql.error import SQLTypeNotImplementYetError, \
+from ksql.errors import SQLTypeNotImplementYetError, \
 					   IllegalTableTypeError, \
 					   IllegalValueFormatError, \
 					   SQLFormatNotImplementError, \
