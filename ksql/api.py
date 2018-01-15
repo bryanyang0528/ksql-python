@@ -6,7 +6,7 @@ import requests
 from  requests import Timeout
 
 from ksql.builder import SQLBuilder
-from ksql.error import CreateError
+from ksql.errors import CreateError
 
 class BaseAPI(object):
     def __init__(self, url, **kwargs):
@@ -29,14 +29,14 @@ class BaseAPI(object):
     def _parse_ksql_res(r, error):
         if_current_status = r[0].get('currentStatus')
         if if_current_status:
-            r = r[0]['currentStatus']['commandStatus']['status']
-            if r == 'SUCCESS':
+            status = r[0]['currentStatus']['commandStatus']['status']
+            if status == 'SUCCESS':
                 return True
             else:
-                raise error(r[0]['currentStatus']['commandStatus']['message'])
+                raise CreateError(r[0]['currentStatus']['commandStatus']['message'])
         else:
             r = r[0]['error']['errorMessage']['message']
-            raise error(r)
+            raise CreateError(r)
 
     def ksql(self, ksql_string):
         r = self._request(endpoint='ksql', sql_string=ksql_string)
