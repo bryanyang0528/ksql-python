@@ -5,7 +5,14 @@ import os
 import re
 
 from setuptools import setup
-from pip.req import parse_requirements
+from distutils.version import LooseVersion
+import pip
+
+if LooseVersion(pip.__version__) >= "10.0.0":
+    from pip._internal.req import parse_requirements
+else:
+    from pip.req import parse_requirements
+
 
 # Get version from __init__.py file
 VERSION = "0.3.0.2.22"
