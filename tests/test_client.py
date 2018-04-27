@@ -10,6 +10,7 @@ from ksql import KSQLAPI
 from ksql import SQLBuilder
 from ksql.errors import CreateError
 
+
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
@@ -67,13 +68,13 @@ class TestKSQLAPI(unittest.TestCase):
                         'pageid varchar']
         topic = self.exist_topic
         value_format = 'DELIMITED'
-        
-        ksql_string = SQLBuilder.build(sql_type = sql_type, 
-                                      table_type = table_type, 
-                                      table_name = table_name, 
-                                      columns_type = columns_type, 
-                                      topic = topic, 
-                                      value_format = value_format)
+
+        ksql_string = SQLBuilder.build(sql_type=sql_type,
+                                       table_type=table_type,
+                                       table_name=table_name,
+                                       columns_type=columns_type,
+                                       topic=topic,
+                                       value_format=value_format)
 
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['currentStatus']['commandStatus']['status'], 'SUCCESS')
@@ -86,48 +87,48 @@ class TestKSQLAPI(unittest.TestCase):
                         'pageid varchar']
         topic = self.exist_topic
         value_format = 'DELIMITED'
-        
-        r = self.api_client.create_stream(table_name = table_name, 
-                                      columns_type = columns_type, 
-                                      topic = topic, 
-                                      value_format = value_format)
+
+        r = self.api_client.create_stream(table_name=table_name,
+                                          columns_type=columns_type,
+                                          topic=topic,
+                                          value_format=value_format)
 
         self.assertTrue(r)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_topic_already_registered.yml')
     def test_raise_create_error_topic_already_registered(self):
-        table_name = 'foo_table' 
-        columns_type = ['name string', 'age bigint'] 
-        topic = self.exist_topic 
+        table_name = 'foo_table'
+        columns_type = ['name string', 'age bigint']
+        topic = self.exist_topic
         value_format = 'DELIMITED'
 
-        r = self.api_client.create_stream(table_name = table_name, 
-                                      columns_type = columns_type, 
-                                      topic = topic, 
-                                      value_format = value_format)
+        r = self.api_client.create_stream(table_name=table_name,
+                                          columns_type=columns_type,
+                                          topic=topic,
+                                          value_format=value_format)
 
         with self.assertRaises(CreateError):
-            r = self.api_client.create_stream(table_name = table_name, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+            r = self.api_client.create_stream(table_name=table_name,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
 
     @vcr.use_cassette('tests/vcr_cassettes/raise_create_error_no_topic.yml')
     def test_raise_create_error_no_topic(self):
-        table_name = 'foo_table' 
-        columns_type = ['name string', 'age bigint'] 
-        topic = 'this_topic_is_not_exist' 
+        table_name = 'foo_table'
+        columns_type = ['name string', 'age bigint']
+        topic = 'this_topic_is_not_exist'
         value_format = 'DELIMITED'
 
         with self.assertRaises(CreateError):
-            r = self.api_client.create_stream(table_name = table_name, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+            r = self.api_client.create_stream(table_name=table_name,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_without_conditions.yml')
     def test_create_stream_as_without_conditions(self):
-        
+
         src_table = 'pageviews_original'
         columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
         topic = self.exist_topic
@@ -137,25 +138,25 @@ class TestKSQLAPI(unittest.TestCase):
         value_format = 'DELIMITED'
         select_columns = ['rowtime as logtime', '*']
 
-        try: 
-            r = self.api_client.create_stream(table_name = src_table, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+        try:
+            r = self.api_client.create_stream(table_name=src_table,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
         except CreateError as e:
             pass
 
-        r = self.api_client.create_stream_as(table_name = table_name,
-                                             src_table =   src_table,
-                                             kafka_topic = kafka_topic, 
-                                             select_columns = select_columns,
-                                             timestamp='logtime', 
-                                             value_format = value_format)
+        r = self.api_client.create_stream_as(table_name=table_name,
+                                             src_table=src_table,
+                                             kafka_topic=kafka_topic,
+                                             select_columns=select_columns,
+                                             timestamp='logtime',
+                                             value_format=value_format)
         self.assertTrue(r)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_without_startwith.yml')
     def test_create_stream_as_with_conditions_without_startwith(self):
-        
+
         src_table = 'pageviews_original'
         columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
         topic = self.exist_topic
@@ -166,19 +167,19 @@ class TestKSQLAPI(unittest.TestCase):
         select_columns = ['rowtime as logtime', '*']
         conditions = "userid = 'foo'"
 
-        try: 
-            r = self.api_client.create_stream(table_name = src_table, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+        try:
+            r = self.api_client.create_stream(table_name=src_table,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
         except CreateError as e:
             pass
 
         r = self.api_client.create_stream_as(table_name=table_name,
                                              src_table=src_table,
-                                             kafka_topic=kafka_topic, 
+                                             kafka_topic=kafka_topic,
                                              select_columns=select_columns,
-                                             timestamp='logtime', 
+                                             timestamp='logtime',
                                              value_format=value_format,
                                              conditions=conditions)
 
@@ -186,7 +187,7 @@ class TestKSQLAPI(unittest.TestCase):
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_with_startwith.yml')
     def test_create_stream_as_with_conditions_with_startwith(self):
-        
+
         src_table = 'pageviews_original'
         columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
         topic = self.exist_topic
@@ -197,19 +198,19 @@ class TestKSQLAPI(unittest.TestCase):
         select_columns = ['rowtime as logtime', '*']
         conditions = "userid = 'foo_%'"
 
-        try: 
-            r = self.api_client.create_stream(table_name = src_table, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+        try:
+            r = self.api_client.create_stream(table_name=src_table,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
         except CreateError as e:
             pass
 
         r = self.api_client.create_stream_as(table_name=table_name,
                                              src_table=src_table,
-                                             kafka_topic=kafka_topic, 
+                                             kafka_topic=kafka_topic,
                                              select_columns=select_columns,
-                                             timestamp='logtime', 
+                                             timestamp='logtime',
                                              value_format=value_format,
                                              conditions=conditions)
 
@@ -217,7 +218,7 @@ class TestKSQLAPI(unittest.TestCase):
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_as_with_conditions_with_startwith_with_and.yml')
     def test_create_stream_as_with_conditions_with_startwith_with_and(self):
-        
+
         src_table = 'pageviews_original'
         columns_type = ['name string', 'age bigint', 'userid string', 'pageid bigint']
         topic = self.exist_topic
@@ -228,19 +229,19 @@ class TestKSQLAPI(unittest.TestCase):
         select_columns = ['rowtime as logtime', '*']
         conditions = "userid = 'foo_%' and age > 10"
 
-        try: 
-            r = self.api_client.create_stream(table_name = src_table, 
-                                              columns_type = columns_type, 
-                                              topic = topic, 
-                                              value_format = value_format)
+        try:
+            r = self.api_client.create_stream(table_name=src_table,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
         except CreateError as e:
             pass
 
         r = self.api_client.create_stream_as(table_name=table_name,
                                              src_table=src_table,
-                                             kafka_topic=kafka_topic, 
+                                             kafka_topic=kafka_topic,
                                              select_columns=select_columns,
-                                             timestamp='logtime', 
+                                             timestamp='logtime',
                                              value_format=value_format,
                                              conditions=conditions)
 
@@ -259,10 +260,10 @@ class TestKSQLAPI(unittest.TestCase):
         timestamp = 'foo'
 
         try:
-            r = self.api_client.create_stream(table_name = src_table,
-                                              columns_type = columns_type,
-                                              topic = topic,
-                                              value_format = value_format)
+            r = self.api_client.create_stream(table_name=src_table,
+                                              columns_type=columns_type,
+                                              topic=topic,
+                                              value_format=value_format)
         except CreateError as e:
             pass
 
