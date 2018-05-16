@@ -12,6 +12,7 @@ class KSQLAPI(object):
     def __init__(self, url, max_retries=3, **kwargs):
         self.url = url
         self.sa = SimplifiedAPI(url, max_retries=max_retries, **kwargs)
+        self.get_ksql_version()
 
     def get_url(self):
         return self.url
@@ -21,36 +22,52 @@ class KSQLAPI(object):
         return self.sa.get_timout()
 
     def get_ksql_version(self):
-        r = requests.get(self.url)
+        r = requests.get(self.url + '/info')
         if r.status_code == 200:
-            info = r.json().get('KSQL Server Info')
+            info = r.json().get('KsqlServerInfo')
             version = info.get('version')
             return version
         else:
-            raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
+            raise ValueError(
+                'Status Code: {}.\nMessage: {}'.format(
+                    r.status_code, r.content))
 
     def ksql(self, ksql_string):
         return self.sa.ksql(ksql_string)
-        
-    def query(self, query_string, encoding='utf-8', chunk_size=128):
-        self.sa.query(query_string=query_string, 
-                       encoding=encoding, 
-                       chunk_size=chunk_size)
 
-    def create_stream(self, table_name, columns_type, topic, value_format):
-        return self.sa.create_stream(table_name = table_name, 
-                                    columns_type = columns_type, 
-                                    topic = topic, 
-                                    value_format = value_format)
+    def query(self, query_string, encoding='utf-8', chunk_size=128):
+        self.sa.query(query_string=query_string,
+                      encoding=encoding,
+                      chunk_size=chunk_size)
+
+    def create_stream(
+            self,
+            table_name,
+            columns_type,
+            topic,
+            value_format='JSON'):
+        return self.sa.create_stream(table_name=table_name,
+                                     columns_type=columns_type,
+                                     topic=topic,
+                                     value_format=value_format)
 
     def create_table(self, table_name, columns_type, topic, value_format):
-        return self.sa.create_table(table_name = table_name, 
-                                    columns_type = columns_type, 
-                                    topic = topic, 
-                                    value_format = value_format)
+        return self.sa.create_table(table_name=table_name,
+                                    columns_type=columns_type,
+                                    topic=topic,
+                                    value_format=value_format)
 
-    def create_stream_as(self, table_name, select_columns, src_table, kafka_topic=None, 
-              value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
+    def create_stream_as(
+            self,
+            table_name,
+            select_columns,
+            src_table,
+            kafka_topic=None,
+            value_format='JSON',
+            conditions=[],
+            partition_by=None,
+            **kwargs):
+
         return self.sa.create_stream_as(table_name=table_name,
                                         select_columns=select_columns,
                                         src_table=src_table,
