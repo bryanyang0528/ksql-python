@@ -28,3 +28,15 @@ class SQLFormatNotImplementError(Exception):
 
 class BuildNotImplmentError(Exception):
     pass
+
+
+class FileTypeError(Exception):
+
+    def __init__(self, ext):
+        self.msg = "This {} file extension is not valid".format(ext)
+
+
+class InvalidQueryError(Exception):
+
+    def __init__(self, query):
+        self.msg = "The query:\n{}\n is invalid".format(query)

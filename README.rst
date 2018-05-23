@@ -81,16 +81,16 @@ It will execute sql query and keep listening streaming data.
        {"row":{"columns":[1512787753888,"key1",1,2,3]},"errorMessage":null}
 
 Simplified API
-~~~~~~~~~~~~~~  
+~~~~~~~~~~~~~~
 
 create_stream/ create_table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    client.create_stream(table_name=table_name, 
-                         columns_type=columns_type, 
-                         topic=topic, 
+    client.create_stream(table_name=table_name,
+                         columns_type=columns_type,
+                         topic=topic,
                          value_format=value_format)
 
 Options
@@ -105,15 +105,15 @@ Options
 +-----------------+-----------+----------+--------------------------------------------------------------+
 | ``topic``       | string    | yes      | Kafka topic                                                  |
 +-----------------+-----------+----------+--------------------------------------------------------------+
-| ``value_format``| string    | no       | ``DELIMITED``(Default) or ``JSON``                           |
+| ``value_format``| string    | no       | ``DELIMITED`` or ``JSON`` (Default)                          |
 +-----------------+-----------+----------+--------------------------------------------------------------+
 
--  Responses 
+-  Responses
 
-:If create table/stream succeed: 
+:If create table/stream succeed:
   return True
 
-:If failed: 
+:If failed:
   raise a CreatError(respose_from_ksql_server)
 
 create_stream_as
@@ -156,7 +156,7 @@ Options
 +-------------------+-----------+----------+--------------------------------------------------------------+
 | ``kafka_topic``   | string    | no       | The name of the Kafka topic of this new stream(table).       |
 +-------------------+-----------+----------+--------------------------------------------------------------+
-| ``value_format``  | string    | no       | ``DELIMITED``(Default), ``JSON`` or ``AVRO``                 |
+| ``value_format``  | string    | no       | ``DELIMITED``, ``JSON``(Default) or ``AVRO``                 |
 +-------------------+-----------+----------+--------------------------------------------------------------+
 | ``conditions``    | string    | no       | The conditions in the where clause.                          |
 +-------------------+-----------+----------+--------------------------------------------------------------+
@@ -165,17 +165,49 @@ Options
 | ``kwargs``        | pair      | no       | please provide ``key=value`` pairs. Please see more options. |
 +-------------------+-----------+----------+--------------------------------------------------------------+
 
+FileUpload
+~~~~~~~~~~~~~~
+
+upload
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Run commands from a .ksql file. Can only support ksql commands and not streaming queries.
+
+.. code:: python
+
+     from ksql import FileUpload
+     pointer = FileUpload('http://ksql-server:8080')
+     pointer.upload('rules.ksql')
+
+
+Options
+^^^^^^^
+
++-----------------+-----------+----------+--------------------------------------------------------------+
+| Option          | Type      | Required | Description                                                  |
++=================+===========+==========+==============================================================+
+| ``ksqlfile``    | string    | yes      | name of file containing the rules                            |
++-----------------+-----------+----------+--------------------------------------------------------------+
+
+
+-  Responses
+
+:If ksql-commands succesfully executed:
+  return (List of server response for all commands)
+
+:If failed:
+  raise the appropriate error
+
 More Options
 ^^^^^^^^^^^^
 
-There are more properties (partitions, replicas, etc...) in the official document. 
+There are more properties (partitions, replicas, etc...) in the official document.
 
 `KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
 
--  Responses 
+-  Responses
 
-:If create table/stream succeed: 
+:If create table/stream succeed:
   return True
 
-:If failed: 
+:If failed:
   raise a CreatError(respose_from_ksql_server)
