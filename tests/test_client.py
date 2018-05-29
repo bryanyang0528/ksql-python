@@ -2,8 +2,9 @@ import json
 import unittest
 import requests
 from copy import copy
+import telnetlib
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, Consumer
 
 import vcr
 
@@ -13,6 +14,15 @@ from ksql import SQLBuilder
 from ksql.errors import CreateError
 
 
+def check_kafka_available(bootstrap_servers):
+    host, port = bootstrap_servers.split(':')
+    try:
+        telnetlib.Telnet(host, port)
+        return True
+    except:
+        return False
+
+
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
@@ -20,9 +30,11 @@ class TestKSQLAPI(unittest.TestCase):
         self.url = "http://ksql-server:8088"
         self.api_client = KSQLAPI(url=self.url)
         self.exist_topic = 'exist_topic'
-        producer = Producer({'bootstrap.servers': 'kafka:29092'})
-        producer.produce(self.exist_topic, "test_message")
-        producer.flush()
+        bootstrap_servers = 'kafka:29092'
+        if check_kafka_available(bootstrap_servers):
+            producer = Producer({'bootstrap.servers': bootstrap_servers})
+            producer.produce(self.exist_topic, "test_message")
+            producer.flush()
 
     def test_with_timeout(self):
         api_client = KSQLAPI(url='http://foo', timeout=10)
