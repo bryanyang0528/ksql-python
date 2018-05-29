@@ -3,6 +3,8 @@ import unittest
 import requests
 from copy import copy
 
+from confluent_kafka import Producer
+
 import vcr
 
 import ksql
@@ -15,9 +17,12 @@ class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
     def setUp(self):
-        self.url = "http://ksql-server:8080"
+        self.url = "http://ksql-server:8088"
         self.api_client = KSQLAPI(url=self.url)
         self.exist_topic = 'exist_topic'
+        producer = Producer({'bootstrap.servers': 'kafka:29092'})
+        producer.produce(self.exist_topic, "test_message")
+        producer.flush()
 
     def test_with_timeout(self):
         api_client = KSQLAPI(url='http://foo', timeout=10)
@@ -26,7 +31,7 @@ class TestKSQLAPI(unittest.TestCase):
     @vcr.use_cassette('tests/vcr_cassettes/healthcheck.yml')
     def test_ksql_server_healthcheck(self):
         """ Test GET requests """
-        res = requests.get(self.url)
+        res = requests.get(self.url + '/status')
         self.assertEqual(res.status_code, 200)
 
     @vcr.use_cassette('tests/vcr_cassettes/get_ksql_server.yml')

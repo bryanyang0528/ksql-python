@@ -10,7 +10,7 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE STREAM test_table (viewtime
         bigint, userid varchar, pageid varchar)                        WITH (kafka_topic=''exist_topic'',
@@ -18,7 +18,7 @@ interactions:
         created"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Thu, 11 Jan 2018 03:44:39 GMT']
+      Date: ['Tue, 29 May 2018 20:42:45 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1
