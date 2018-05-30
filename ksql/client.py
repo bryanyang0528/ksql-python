@@ -23,11 +23,10 @@ class KSQLAPI(object):
     def get_ksql_version(self):
         r = requests.get(self.url + "/info")
         if r.status_code == 200:
-            print(r.json())
             info = r.json().get('KsqlServerInfo')
             version = info.get('version')
             return version
-        else:
+        else:  # pragma: no cover
             raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
 
     def get_properties(self):
