@@ -60,7 +60,7 @@ class BaseAPI(object):
 
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
-                print(chunk.decode(encoding))
+                yield chunk.decode(encoding)
 
     def _request(self, endpoint, method='post', sql_string=''):
         url = '{}/{}'.format(self.url, endpoint)
