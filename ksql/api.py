@@ -6,7 +6,7 @@ import requests
 from requests import Timeout
 
 from ksql.builder import SQLBuilder
-from ksql.errors import CreateError, InvalidQueryError
+from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
 
 class BaseAPI(object):
@@ -14,7 +14,7 @@ class BaseAPI(object):
         self.url = url
         self.max_retries = kwargs.get("max_retries", 3)
         self.delay = kwargs.get("delay", 0)
-        self.timeout = kwargs.get("timeout", 5)
+        self.timeout = kwargs.get("timeout", 15)
 
     def get_timout(self):
         return self.timeout
@@ -29,27 +29,37 @@ class BaseAPI(object):
         return sql_string
 
     @staticmethod
-    def _parse_ksql_res(r, error):
-        if 'commandStatus' in str(r[0]):
-            status = r[0]['currentStatus']['commandStatus']['status']
-            if status == 'SUCCESS':
-                return True
+    def _raise_for_status(r):
+        try:
+            r_json = r.json()
+        except ValueError:
+            KSQLError("Unknown Error: {}".format(r.content))
+        if r.status_code != 200:
+            # seems to be the new API behavior
+            if r_json.get('@type') == 'statement_error':
+                error_message = r_json['message']
+                error_code = r_json['error_code']
+                stackTrace = r_json['stackTrace']
+                raise KSQLError(error_message, error_code, stackTrace)
+
+
             else:
-                raise CreateError(r[0]['currentStatus']['commandStatus']['message'])
+                KSQLError("Unknown Error: {}".format(r.content))
         else:
-            r = 'Message: ' + r[0]['error']['errorMessage']['message']
-            raise CreateError(r)
+            # seems to be the old API behavior, so some errors have status 200, bug??
+            if r_json[0]['@type'] == 'currentStatus' \
+                    and r_json[0]['commandStatus']['status'] == 'ERROR':
+                error_message = r_json[0]['commandStatus']['message']
+                error_code = None
+                stackTrace = None
+                raise KSQLError(error_message, error_code, stackTrace)
+            return True
 
     def ksql(self, ksql_string):
         r = self._request(endpoint='ksql', sql_string=ksql_string)
-
-        if r.status_code == 200:
-            r = r.json()
-            return r
-        else:
-            raise ValueError(
-                'Status Code: {}.\nMessage: {}'.format(
-                    r.status_code, r.content))
+        self._raise_for_status(r)
+        r = r.json()
+        return r
 
     def query(self, query_string, encoding='utf-8', chunk_size=128):
         """
@@ -184,7 +194,7 @@ class SimplifiedAPI(BaseAPI):
                                        topic=topic,
                                        value_format=value_format)
         r = self.ksql(ksql_string)
-        return self._parse_ksql_res(r, CreateError)
+        return True
 
     @BaseAPI.retry(exceptions=(Timeout, CreateError))
     def _create_as(
@@ -209,4 +219,4 @@ class SimplifiedAPI(BaseAPI):
                                        partition_by=partition_by,
                                        **kwargs)
         r = self.ksql(ksql_string)
-        return self._parse_ksql_res(r, CreateError)
+        return True

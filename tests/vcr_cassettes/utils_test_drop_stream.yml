@@ -1,0 +1,145 @@
+interactions:
+- request:
+    body: '{"ksql": "DESCRIBE EXTENDED ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['64']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '{"@type":"statement_error","error_code":40001,"message":"Could
+        not find STREAM/TABLE ''KSQL_PYTHON_TEST_TEST_DROP_STREAM'' in the Metastore","stackTrace":["io.confluent.ksql.rest.server.resources.KsqlResource.describe(KsqlResource.java:413)","io.confluent.ksql.rest.server.resources.KsqlResource.validateStatement(KsqlResource.java:214)","io.confluent.ksql.rest.server.resources.KsqlResource.handleKsqlStatements(KsqlResource.java:170)","sun.reflect.GeneratedMethodAccessor6.invoke(Unknown
+        Source)","sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","java.lang.reflect.Method.invoke(Method.java:498)","org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:76)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:148)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:191)","org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:200)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:103)","org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:493)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:415)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:104)","org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:277)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:272)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:268)","org.glassfish.jersey.internal.Errors.process(Errors.java:316)","org.glassfish.jersey.internal.Errors.process(Errors.java:298)","org.glassfish.jersey.internal.Errors.process(Errors.java:268)","org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:289)","org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:256)","org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:703)","org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:416)","org.glassfish.jersey.servlet.ServletContainer.serviceImpl(ServletContainer.java:409)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:584)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:525)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:462)","org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642)","org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533)","org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)","org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595)","org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)","org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253)","org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203)","org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473)","org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564)","org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201)","org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155)","org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144)","org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:126)","org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:169)","org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:219)","org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)","org.eclipse.jetty.server.Server.handle(Server.java:531)","org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352)","org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260)","org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281)","org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102)","org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126)","org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366)","org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760)","org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678)","java.lang.Thread.run(Thread.java:748)"],"statementText":"DESCRIBE
+        EXTENDED ksql_python_test_test_drop_stream;","entities":[]}'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 400, message: Bad Request}
+- request:
+    body: '{"ksql": "DROP\n    STREAM IF EXISTS\n    ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['78']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"currentStatus","statementText":"DROP\n    STREAM IF
+        EXISTS\n    ksql_python_test_test_drop_stream;","commandId":"stream/KSQL_PYTHON_TEST_TEST_DROP_STREAM/drop","commandStatus":{"status":"SUCCESS","message":"Source
+        KSQL_PYTHON_TEST_TEST_DROP_STREAM does not exist."}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "CREATE STREAM ksql_python_test_test_drop_stream (viewtime bigint,
+      userid varchar, pageid varchar)                        WITH (kafka_topic=''ksql_python_test_exist_topic'',
+      value_format=''DELIMITED'');"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['209']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"currentStatus","statementText":"CREATE STREAM ksql_python_test_test_drop_stream
+        (viewtime bigint, userid varchar, pageid varchar)                        WITH
+        (kafka_topic=''ksql_python_test_exist_topic'', value_format=''DELIMITED'');","commandId":"stream/KSQL_PYTHON_TEST_TEST_DROP_STREAM/create","commandStatus":{"status":"SUCCESS","message":"Stream
+        created"}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "DESCRIBE EXTENDED ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['64']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"sourceDescription","statementText":"DESCRIBE EXTENDED
+        ksql_python_test_test_drop_stream;","sourceDescription":{"name":"KSQL_PYTHON_TEST_TEST_DROP_STREAM","readQueries":[],"writeQueries":[],"schema":[{"name":"ROWTIME","type":"BIGINT"},{"name":"ROWKEY","type":"VARCHAR(STRING)"},{"name":"VIEWTIME","type":"BIGINT"},{"name":"USERID","type":"VARCHAR(STRING)"},{"name":"PAGEID","type":"VARCHAR(STRING)"}],"type":"STREAM","key":"","timestamp":"","statistics":"","errorStats":"","extended":true,"format":"DELIMITED","topic":"ksql_python_test_exist_topic","partitions":1,"replication":1}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "DESCRIBE EXTENDED ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['64']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"sourceDescription","statementText":"DESCRIBE EXTENDED
+        ksql_python_test_test_drop_stream;","sourceDescription":{"name":"KSQL_PYTHON_TEST_TEST_DROP_STREAM","readQueries":[],"writeQueries":[],"schema":[{"name":"ROWTIME","type":"BIGINT"},{"name":"ROWKEY","type":"VARCHAR(STRING)"},{"name":"VIEWTIME","type":"BIGINT"},{"name":"USERID","type":"VARCHAR(STRING)"},{"name":"PAGEID","type":"VARCHAR(STRING)"}],"type":"STREAM","key":"","timestamp":"","statistics":"","errorStats":"","extended":true,"format":"DELIMITED","topic":"ksql_python_test_exist_topic","partitions":1,"replication":1}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "DROP\n    STREAM IF EXISTS\n    ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['78']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"currentStatus","statementText":"DROP\n    STREAM IF
+        EXISTS\n    ksql_python_test_test_drop_stream;","commandId":"stream/KSQL_PYTHON_TEST_TEST_DROP_STREAM/drop","commandStatus":{"status":"SUCCESS","message":"Source
+        KSQL_PYTHON_TEST_TEST_DROP_STREAM was dropped. "}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "DESCRIBE EXTENDED ksql_python_test_test_drop_stream;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['64']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '{"@type":"statement_error","error_code":40001,"message":"Could
+        not find STREAM/TABLE ''KSQL_PYTHON_TEST_TEST_DROP_STREAM'' in the Metastore","stackTrace":["io.confluent.ksql.rest.server.resources.KsqlResource.describe(KsqlResource.java:413)","io.confluent.ksql.rest.server.resources.KsqlResource.validateStatement(KsqlResource.java:214)","io.confluent.ksql.rest.server.resources.KsqlResource.handleKsqlStatements(KsqlResource.java:170)","sun.reflect.GeneratedMethodAccessor6.invoke(Unknown
+        Source)","sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","java.lang.reflect.Method.invoke(Method.java:498)","org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:76)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:148)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:191)","org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:200)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:103)","org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:493)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:415)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:104)","org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:277)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:272)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:268)","org.glassfish.jersey.internal.Errors.process(Errors.java:316)","org.glassfish.jersey.internal.Errors.process(Errors.java:298)","org.glassfish.jersey.internal.Errors.process(Errors.java:268)","org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:289)","org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:256)","org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:703)","org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:416)","org.glassfish.jersey.servlet.ServletContainer.serviceImpl(ServletContainer.java:409)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:584)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:525)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:462)","org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642)","org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533)","org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)","org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595)","org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)","org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253)","org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203)","org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473)","org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564)","org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201)","org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155)","org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144)","org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:126)","org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:169)","org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:219)","org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)","org.eclipse.jetty.server.Server.handle(Server.java:531)","org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352)","org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260)","org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281)","org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102)","org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168)","org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126)","org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366)","org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760)","org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678)","java.lang.Thread.run(Thread.java:748)"],"statementText":"DESCRIBE
+        EXTENDED ksql_python_test_test_drop_stream;","entities":[]}'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Sun, 24 Jun 2018 19:57:14 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 400, message: Bad Request}
+version: 1

@@ -36,7 +36,7 @@ class KSQLAPI(object):
 
     def get_properties(self):
         properties = self.sa.ksql("show properties;")
-        return properties[0]['properties']['properties']
+        return properties[0]['properties']
 
     def ksql(self, ksql_string):
         return self.sa.ksql(ksql_string)
