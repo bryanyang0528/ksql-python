@@ -20,13 +20,13 @@ class TestKSQLAPI(unittest.TestCase):
         self.exist_topic = 'exist_topic'
 
     def test_with_timeout(self):
-        api_client = KSQLAPI(url='http://foo', timeout=10)
+        api_client = KSQLAPI(url=self.url, timeout=10)
         self.assertEquals(api_client.timeout, 10)
 
     @vcr.use_cassette('tests/vcr_cassettes/healthcheck.yml')
     def test_ksql_server_healthcheck(self):
         """ Test GET requests """
-        res = requests.get(self.url)
+        res = requests.get(self.url + '/info')
         self.assertEqual(res.status_code, 200)
 
     @vcr.use_cassette('tests/vcr_cassettes/get_ksql_server.yml')
