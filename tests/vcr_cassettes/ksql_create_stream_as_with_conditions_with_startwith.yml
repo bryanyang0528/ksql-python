@@ -3,7 +3,7 @@ interactions:
     body: '{"ksql": "CREATE stream pageviews_original (name string, age bigint, userid
       string, pageid bigint) WITH (kafka_topic=''exist_topic'', value_format=''DELIMITED'');"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['160']
@@ -18,7 +18,7 @@ interactions:
         created"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:43:23 GMT']
+      Date: ['Tue, 19 Jun 2018 04:44:59 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -27,7 +27,7 @@ interactions:
       timestamp=''logtime'') AS SELECT rowtime as logtime, * FROM pageviews_original
       where userid = ''foo_%'';"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['269']
@@ -43,7 +43,7 @@ interactions:
         created and running"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:43:23 GMT']
+      Date: ['Tue, 19 Jun 2018 04:44:59 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

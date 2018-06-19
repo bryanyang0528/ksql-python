@@ -3,7 +3,7 @@ interactions:
     body: '{"ksql": "CREATE STREAM test_table (viewtime bigint, userid varchar, pageid
       varchar)                        WITH (kafka_topic=''exist_topic'', value_format=''DELIMITED'');"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['169']
@@ -18,7 +18,7 @@ interactions:
         created"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:42:45 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:05 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

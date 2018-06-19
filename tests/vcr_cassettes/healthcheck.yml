@@ -9,10 +9,10 @@ interactions:
     method: GET
     uri: http://ksql-server:8088/status
   response:
-    body: {string: '{"commandStatuses":{}}'}
+    body: {string: '{"commandStatuses":{"stream/CREATE_STREAM_AS_WITH_CONDITIONS_WITH_STARTWITH/create":"SUCCESS","stream/CREATE_STREAM_AS_WITH_CONDITIONS_WITHOUT_STARTWITH/create":"SUCCESS","stream/PAGEVIEWS_ORIGINAL/create":"SUCCESS","stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create":"ERROR","stream/CREATE_STREAM_AS_WITHOUT_CONDITIONS/create":"SUCCESS","stream/TEST_TABLE/create":"SUCCESS","stream/CREATE_STREAM_AS_WITH_CONDITIONS_WITH_STARTWITH_WITH_AND/create":"SUCCESS","stream/PREBID_TRAFFIC_LOG_TOTAL_STREAM/create":"SUCCESS"}}'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:39:23 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:10 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

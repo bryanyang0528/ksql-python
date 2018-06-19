@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"ksql": "show properties;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['28']
@@ -16,7 +16,7 @@ interactions:
         /etc/ksql/ksql-server.properties","com.sun.management.jmxremote":"","ksql.sink.replicas":1,"listeners":"http://0.0.0.0:8088","sun.cpu.endian":"little","default.deserialization.exception.handler":"io.confluent.ksql.errors.LogMetricAndContinueExceptionHandler","sun.os.patch.level":"unknown","sun.io.unicode.encoding":"UnicodeLittle","ksql.sink.window.change.log.additional.retention":1000000,"auto.offset.reset":"latest","num.stream.threads":4,"ksql.persistent.prefix":"query_","application.id":"KSQL_REST_SERVER_DEFAULT_APP_ID"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Wed, 30 May 2018 20:09:25 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:04 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

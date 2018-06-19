@@ -12,7 +12,7 @@ interactions:
     body: {string: '{"KsqlServerInfo":{"version":"4.1.1-SNAPSHOT"}}'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:25:39 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:03 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

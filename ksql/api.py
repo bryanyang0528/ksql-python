@@ -6,7 +6,7 @@ import requests
 from requests import Timeout
 
 from ksql.builder import SQLBuilder
-from ksql.errors import CreateError
+from ksql.errors import CreateError, InvalidQueryError
 
 
 class BaseAPI(object):
@@ -23,20 +23,21 @@ class BaseAPI(object):
     def _validate_sql_string(sql_string):
         if len(sql_string) > 0:
             if sql_string[-1] != ';':
-                sql_string += ';'
+                sql_string = sql_string + ';'
+        else:
+            raise InvalidQueryError(sql_string)
         return sql_string
 
     @staticmethod
     def _parse_ksql_res(r, error):
-        if_current_status = r[0].get('currentStatus')
-        if if_current_status:
+        if 'commandStatus' in str(r[0]):
             status = r[0]['currentStatus']['commandStatus']['status']
             if status == 'SUCCESS':
                 return True
             else:
                 raise CreateError(r[0]['currentStatus']['commandStatus']['message'])
         else:
-            r = r[0]['error']['errorMessage']['message']
+            r = 'Message: ' + r[0]['error']['errorMessage']['message']
             raise CreateError(r)
 
     def ksql(self, ksql_string):
@@ -46,10 +47,12 @@ class BaseAPI(object):
             r = r.json()
             return r
         else:
-            raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
+            raise ValueError(
+                'Status Code: {}.\nMessage: {}'.format(
+                    r.status_code, r.content))
 
     def query(self, query_string, encoding='utf-8', chunk_size=128):
-        """  
+        """
         Process streaming incoming data.
 
         """
@@ -68,6 +71,7 @@ class BaseAPI(object):
         })
 
         headers = {
+            "Accept": "application/json",
             "Content-Type": "application/json"
         }
 
@@ -127,7 +131,12 @@ class SimplifiedAPI(BaseAPI):
     def __init__(self, url, **kwargs):
         super(SimplifiedAPI, self).__init__(url, **kwargs)
 
-    def create_stream(self, table_name, columns_type, topic, value_format):
+    def create_stream(
+            self,
+            table_name,
+            columns_type,
+            topic,
+            value_format='JSON'):
         return self._create(table_type='stream',
                             table_name=table_name,
                             columns_type=columns_type,
@@ -141,8 +150,16 @@ class SimplifiedAPI(BaseAPI):
                             topic=topic,
                             value_format=value_format)
 
-    def create_stream_as(self, table_name, select_columns, src_table, kafka_topic=None,
-                         value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
+    def create_stream_as(
+            self,
+            table_name,
+            select_columns,
+            src_table,
+            kafka_topic=None,
+            value_format='JSON',
+            conditions=[],
+            partition_by=None,
+            **kwargs):
         return self._create_as(table_type='stream',
                                table_name=table_name,
                                select_columns=select_columns,
@@ -153,7 +170,13 @@ class SimplifiedAPI(BaseAPI):
                                partition_by=partition_by,
                                **kwargs)
 
-    def _create(self, table_type, table_name, columns_type, topic, value_format):
+    def _create(
+            self,
+            table_type,
+            table_name,
+            columns_type,
+            topic,
+            value_format='JSON'):
         ksql_string = SQLBuilder.build(sql_type='create',
                                        table_type=table_type,
                                        table_name=table_name,
@@ -164,8 +187,17 @@ class SimplifiedAPI(BaseAPI):
         return self._parse_ksql_res(r, CreateError)
 
     @BaseAPI.retry(exceptions=(Timeout, CreateError))
-    def _create_as(self, table_type, table_name, select_columns, src_table, kafka_topic=None,
-                   value_format='DELIMITED', conditions=[], partition_by=None, **kwargs):
+    def _create_as(
+            self,
+            table_type,
+            table_name,
+            select_columns,
+            src_table,
+            kafka_topic=None,
+            value_format='JSON',
+            conditions=[],
+            partition_by=None,
+            **kwargs):
         ksql_string = SQLBuilder.build(sql_type='create_as',
                                        table_type=table_type,
                                        table_name=table_name,

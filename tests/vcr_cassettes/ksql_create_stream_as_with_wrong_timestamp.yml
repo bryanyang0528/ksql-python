@@ -3,7 +3,7 @@ interactions:
     body: '{"ksql": "CREATE stream prebid_traffic_log_total_stream (name string, age
       bigint, userid string, pageid bigint) WITH (kafka_topic=''exist_topic'', value_format=''DELIMITED'');"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['173']
@@ -18,14 +18,14 @@ interactions:
         created"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:35 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:05 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
     body: '{"ksql": "CREATE stream prebid_traffic_log_valid_stream WITH (kafka_topic=''prebid_traffic_log_valid_topic'',
       value_format=''DELIMITED'', timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['202']
@@ -53,14 +53,14 @@ interactions:
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:35 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:05 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
     body: '{"ksql": "CREATE stream prebid_traffic_log_valid_stream WITH (kafka_topic=''prebid_traffic_log_valid_topic'',
       value_format=''DELIMITED'', timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['202']
@@ -88,14 +88,14 @@ interactions:
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:36 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:06 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
     body: '{"ksql": "CREATE stream prebid_traffic_log_valid_stream WITH (kafka_topic=''prebid_traffic_log_valid_topic'',
       value_format=''DELIMITED'', timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['202']
@@ -123,14 +123,14 @@ interactions:
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:38 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:07 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
     body: '{"ksql": "CREATE stream prebid_traffic_log_valid_stream WITH (kafka_topic=''prebid_traffic_log_valid_topic'',
       value_format=''DELIMITED'', timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['202']
@@ -158,14 +158,14 @@ interactions:
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:39 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:09 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
     body: '{"ksql": "CREATE stream prebid_traffic_log_valid_stream WITH (kafka_topic=''prebid_traffic_log_valid_topic'',
       value_format=''DELIMITED'', timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['202']
@@ -193,7 +193,7 @@ interactions:
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Tue, 29 May 2018 20:44:40 GMT']
+      Date: ['Tue, 19 Jun 2018 04:45:10 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1
