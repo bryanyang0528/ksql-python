@@ -22,9 +22,15 @@ here = os.path.dirname(__file__)
 # Get long description
 README = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
-reqs = ['requests',
-        'six',
-        'urllib3']
+
+def get_install_requirements(path):
+    content = open(os.path.join(os.path.dirname(__file__), path)).read()
+    return [
+        req
+        for req in content.split("\n")
+        if req != '' and not req.startswith('#')
+    ]
+
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -43,7 +49,10 @@ setup(
     ],
     include_package_data=True,
     platforms=['any'],
-    install_requires=reqs,
+    install_requires=get_install_requirements("requirements.txt"),
+    extras_require={
+        "dev": get_install_requirements("test-requirements.txt")
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

@@ -2,6 +2,9 @@ import json
 import unittest
 import requests
 from copy import copy
+import telnetlib
+
+from confluent_kafka import Producer, Consumer
 
 import vcr
 
@@ -11,13 +14,30 @@ from ksql import SQLBuilder
 from ksql.errors import CreateError
 
 
+def check_kafka_available(bootstrap_servers):
+    host, port = bootstrap_servers.split(':')
+    try:
+        telnetlib.Telnet(host, port)
+        return True
+    except:
+        return False
+
+
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
     def setUp(self):
-        self.url = "http://ksql-server:8080"
+        self.url = "http://ksql-server:8088"
         self.api_client = KSQLAPI(url=self.url)
         self.exist_topic = 'exist_topic'
+        bootstrap_servers = 'kafka:29092'
+        if check_kafka_available(bootstrap_servers):
+            producer = Producer({'bootstrap.servers': bootstrap_servers})
+            producer.produce(self.exist_topic, "test_message")
+            producer.flush()
+
+    def test_get_url(self):
+        self.assertEqual(self.api_client.get_url(), "http://ksql-server:8088")
 
     def test_with_timeout(self):
         api_client = KSQLAPI(url=self.url, timeout=10)
@@ -26,7 +46,7 @@ class TestKSQLAPI(unittest.TestCase):
     @vcr.use_cassette('tests/vcr_cassettes/healthcheck.yml')
     def test_ksql_server_healthcheck(self):
         """ Test GET requests """
-        res = requests.get(self.url + '/info')
+        res = requests.get(self.url + '/status')
         self.assertEqual(res.status_code, 200)
 
     @vcr.use_cassette('tests/vcr_cassettes/get_ksql_server.yml')
@@ -34,6 +54,11 @@ class TestKSQLAPI(unittest.TestCase):
         """ Test GET requests """
         version = self.api_client.get_ksql_version()
         self.assertEqual(version, ksql.__ksql_server_version__)
+
+    @vcr.use_cassette('tests/vcr_cassettes/get_properties.yml')
+    def test_get_properties(self):
+        properties = self.api_client.get_properties()
+        self.assertEqual(properties['listeners'], "http://0.0.0.0:8088")
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_show_table.yml')
     def test_ksql_show_tables(self):
