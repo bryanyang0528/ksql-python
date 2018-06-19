@@ -28,7 +28,7 @@ class TestKSQLAPI(unittest.TestCase):
 
     def setUp(self):
         self.url = "http://ksql-server:8088"
-        self.api_client = KSQLAPI(url=self.url)
+        self.api_client = KSQLAPI(url=self.url, check_version=False)
         self.exist_topic = 'exist_topic'
         bootstrap_servers = 'kafka:29092'
         if check_kafka_available(bootstrap_servers):
@@ -40,7 +40,7 @@ class TestKSQLAPI(unittest.TestCase):
         self.assertEqual(self.api_client.get_url(), "http://ksql-server:8088")
 
     def test_with_timeout(self):
-        api_client = KSQLAPI(url=self.url, timeout=10)
+        api_client = KSQLAPI(url=self.url, timeout=10, check_version=False)
         self.assertEquals(api_client.timeout, 10)
 
     @vcr.use_cassette('tests/vcr_cassettes/healthcheck.yml')

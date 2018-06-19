@@ -9,10 +9,11 @@ from ksql.api import SimplifiedAPI
 class KSQLAPI(object):
     """ API Class """
 
-    def __init__(self, url, max_retries=3, **kwargs):
+    def __init__(self, url, max_retries=3, check_version=True, **kwargs):
         self.url = url
         self.sa = SimplifiedAPI(url, max_retries=max_retries, **kwargs)
-        self.get_ksql_version()
+        if check_version is True:
+            self.get_ksql_version()
 
     def get_url(self):
         return self.url
