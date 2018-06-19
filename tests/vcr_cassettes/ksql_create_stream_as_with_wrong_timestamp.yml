@@ -10,7 +10,7 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_total_stream
         (name string, age bigint, userid string, pageid bigint) WITH (kafka_topic=''exist_topic'',
@@ -18,7 +18,7 @@ interactions:
         created"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:13 GMT']
+      Date: ['Tue, 29 May 2018 20:44:35 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -32,28 +32,28 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_valid_stream
         WITH (kafka_topic=''prebid_traffic_log_valid_topic'', value_format=''DELIMITED'',
         timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;","commandId":"stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create","commandStatus":{"status":"ERROR","message":"java.util.NoSuchElementException:
-        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:90)\n\tat
-        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:74)\n\tat
-        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:104)\n\tat
+        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:101)\n\tat
+        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:79)\n\tat
+        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:114)\n\tat
         io.confluent.ksql.QueryEngine.buildLogicalPlans(QueryEngine.java:87)\n\tat
-        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:174)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:166)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:298)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:268)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:210)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:185)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:100)\n\tat
+        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:197)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:188)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:337)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:306)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:236)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:203)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:108)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.executeStatement(CommandRunner.java:105)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.fetchAndRunCommands(CommandRunner.java:88)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.run(CommandRunner.java:63)\n\tat
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:13 GMT']
+      Date: ['Tue, 29 May 2018 20:44:35 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -67,28 +67,28 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_valid_stream
         WITH (kafka_topic=''prebid_traffic_log_valid_topic'', value_format=''DELIMITED'',
         timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;","commandId":"stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create","commandStatus":{"status":"ERROR","message":"java.util.NoSuchElementException:
-        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:90)\n\tat
-        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:74)\n\tat
-        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:104)\n\tat
+        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:101)\n\tat
+        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:79)\n\tat
+        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:114)\n\tat
         io.confluent.ksql.QueryEngine.buildLogicalPlans(QueryEngine.java:87)\n\tat
-        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:174)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:166)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:298)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:268)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:210)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:185)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:100)\n\tat
+        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:197)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:188)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:337)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:306)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:236)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:203)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:108)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.executeStatement(CommandRunner.java:105)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.fetchAndRunCommands(CommandRunner.java:88)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.run(CommandRunner.java:63)\n\tat
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:15 GMT']
+      Date: ['Tue, 29 May 2018 20:44:36 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -102,28 +102,28 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_valid_stream
         WITH (kafka_topic=''prebid_traffic_log_valid_topic'', value_format=''DELIMITED'',
         timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;","commandId":"stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create","commandStatus":{"status":"ERROR","message":"java.util.NoSuchElementException:
-        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:90)\n\tat
-        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:74)\n\tat
-        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:104)\n\tat
+        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:101)\n\tat
+        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:79)\n\tat
+        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:114)\n\tat
         io.confluent.ksql.QueryEngine.buildLogicalPlans(QueryEngine.java:87)\n\tat
-        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:174)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:166)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:298)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:268)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:210)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:185)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:100)\n\tat
+        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:197)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:188)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:337)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:306)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:236)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:203)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:108)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.executeStatement(CommandRunner.java:105)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.fetchAndRunCommands(CommandRunner.java:88)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.run(CommandRunner.java:63)\n\tat
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:16 GMT']
+      Date: ['Tue, 29 May 2018 20:44:38 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -137,28 +137,28 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_valid_stream
         WITH (kafka_topic=''prebid_traffic_log_valid_topic'', value_format=''DELIMITED'',
         timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;","commandId":"stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create","commandStatus":{"status":"ERROR","message":"java.util.NoSuchElementException:
-        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:90)\n\tat
-        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:74)\n\tat
-        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:104)\n\tat
+        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:101)\n\tat
+        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:79)\n\tat
+        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:114)\n\tat
         io.confluent.ksql.QueryEngine.buildLogicalPlans(QueryEngine.java:87)\n\tat
-        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:174)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:166)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:298)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:268)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:210)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:185)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:100)\n\tat
+        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:197)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:188)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:337)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:306)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:236)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:203)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:108)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.executeStatement(CommandRunner.java:105)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.fetchAndRunCommands(CommandRunner.java:88)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.run(CommandRunner.java:63)\n\tat
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:17 GMT']
+      Date: ['Tue, 29 May 2018 20:44:39 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 - request:
@@ -172,28 +172,28 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: http://ksql-server:8080/ksql
+    uri: http://ksql-server:8088/ksql
   response:
     body: {string: '[{"currentStatus":{"statementText":"CREATE stream prebid_traffic_log_valid_stream
         WITH (kafka_topic=''prebid_traffic_log_valid_topic'', value_format=''DELIMITED'',
         timestamp=''foo'') AS SELECT * FROM prebid_traffic_log_total_stream;","commandId":"stream/PREBID_TRAFFIC_LOG_VALID_STREAM/create","commandStatus":{"status":"ERROR","message":"java.util.NoSuchElementException:
-        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:90)\n\tat
-        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:74)\n\tat
-        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:104)\n\tat
+        No value present\n\tat java.util.Optional.get(Optional.java:135)\n\tat io.confluent.ksql.planner.LogicalPlanner.buildOutputNode(LogicalPlanner.java:101)\n\tat
+        io.confluent.ksql.planner.LogicalPlanner.buildPlan(LogicalPlanner.java:79)\n\tat
+        io.confluent.ksql.QueryEngine.buildQueryLogicalPlan(QueryEngine.java:114)\n\tat
         io.confluent.ksql.QueryEngine.buildLogicalPlans(QueryEngine.java:87)\n\tat
-        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:174)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:166)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:298)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:268)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:210)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:185)\n\tat
-        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:100)\n\tat
+        io.confluent.ksql.KsqlEngine.planQueries(KsqlEngine.java:197)\n\tat io.confluent.ksql.KsqlEngine.buildMultipleQueries(KsqlEngine.java:188)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.startQuery(StatementExecutor.java:337)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleCreateAsSelect(StatementExecutor.java:306)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.executeStatement(StatementExecutor.java:236)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatementWithTerminatedQueries(StatementExecutor.java:203)\n\tat
+        io.confluent.ksql.rest.server.computation.StatementExecutor.handleStatement(StatementExecutor.java:108)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.executeStatement(CommandRunner.java:105)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.fetchAndRunCommands(CommandRunner.java:88)\n\tat
         io.confluent.ksql.rest.server.computation.CommandRunner.run(CommandRunner.java:63)\n\tat
         java.lang.Thread.run(Thread.java:745)\n"}}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Mon, 15 Jan 2018 06:54:18 GMT']
+      Date: ['Tue, 29 May 2018 20:44:40 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1
