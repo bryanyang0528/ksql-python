@@ -23,20 +23,21 @@ class BaseAPI(object):
     def _validate_sql_string(sql_string):
         if len(sql_string) > 0:
             if sql_string[-1] != ';':
-                raise InvalidQueryError(sql_string)
+                sql_string = sql_string + ';'
+        else:
+            raise InvalidQueryError(sql_string)
         return sql_string
 
     @staticmethod
     def _parse_ksql_res(r, error):
-        if 'commandStatus' in r[0]:
-            status = r[0]['commandStatus']['status']
+        if 'commandStatus' in str(r[0]):
+            status = r[0]['currentStatus']['commandStatus']['status']
             if status == 'SUCCESS':
                 return True
             else:
-                raise CreateError(r[0]['commandStatus']['message'])
+                raise CreateError(r[0]['currentStatus']['commandStatus']['message'])
         else:
-            r = "Error Code:" + r[0]['error_code'] + \
-                '\nmessage' + r[0]['message']
+            r = 'Message: ' + r[0]['error']['errorMessage']['message']
             raise CreateError(r)
 
     def ksql(self, ksql_string):
@@ -62,7 +63,6 @@ class BaseAPI(object):
                 print(chunk.decode(encoding))
 
     def _request(self, endpoint, method='post', sql_string=''):
-
         url = '{}/{}'.format(self.url, endpoint)
 
         sql_string = self._validate_sql_string(sql_string)
