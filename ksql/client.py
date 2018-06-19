@@ -21,13 +21,17 @@ class KSQLAPI(object):
         return self.sa.get_timout()
 
     def get_ksql_version(self):
-        r = requests.get(self.url)
+        r = requests.get(self.url + "/info")
         if r.status_code == 200:
-            info = r.json().get('KSQL Server Info')
+            info = r.json().get('KsqlServerInfo')
             version = info.get('version')
             return version
-        else:
+        else:  # pragma: no cover
             raise ValueError('Status Code: {}.\nMessage: {}'.format(r.status_code, r.content))
+
+    def get_properties(self):
+        properties = self.sa.ksql("show properties;")
+        return properties[0]['properties']['properties']
 
     def ksql(self, ksql_string):
         return self.sa.ksql(ksql_string)

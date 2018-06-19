@@ -1,0 +1,22 @@
+interactions:
+- request:
+    body: '{"ksql": "show properties;"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['28']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.18.4]
+    method: POST
+    uri: http://ksql-server:8088/ksql
+  response:
+    body: {string: '[{"properties":{"statementText":"show properties;","properties":{"awt.toolkit":"sun.awt.X11.XToolkit","log4j.configuration":"file:/etc/ksql/log4j-rolling.properties","ksql.transient.prefix":"transient_","sun.boot.class.path":"/usr/lib/jvm/zulu-8-amd64/jre/lib/resources.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/rt.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/jsse.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/jce.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/charsets.jar:/usr/lib/jvm/zulu-8-amd64/jre/lib/jfr.jar:/usr/lib/jvm/zulu-8-amd64/jre/classes","commit.interval.ms":2000,"file.encoding.pkg":"sun.io","sun.management.compiler":"HotSpot
+        64-Bit Tiered Compilers","sun.cpu.isalist":"","sun.jnu.encoding":"UTF-8","bootstrap.servers":"kafka:29092","com.sun.management.jmxremote.authenticate":"false","ksql.schema.registry.url":"http://schema-registry:8081","sun.arch.data.model":"64","ksql.sink.partitions":4,"file.encoding":"UTF-8","ksql.statestore.suffix":"_ksql_statestore","ksql.service.id":"default_","cache.max.bytes.buffering":10000000,"sun.java.launcher":"SUN_STANDARD","com.sun.management.jmxremote.ssl":"false","sun.boot.library.path":"/usr/lib/jvm/zulu-8-amd64/jre/lib/amd64","sun.java.command":"io.confluent.ksql.rest.server.KsqlServerMain
+        /etc/ksql/ksql-server.properties","com.sun.management.jmxremote":"","ksql.sink.replicas":1,"listeners":"http://0.0.0.0:8088","sun.cpu.endian":"little","default.deserialization.exception.handler":"io.confluent.ksql.errors.LogMetricAndContinueExceptionHandler","sun.os.patch.level":"unknown","sun.io.unicode.encoding":"UnicodeLittle","ksql.sink.window.change.log.additional.retention":1000000,"auto.offset.reset":"latest","num.stream.threads":4,"ksql.persistent.prefix":"query_","application.id":"KSQL_REST_SERVER_DEFAULT_APP_ID"}}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Wed, 30 May 2018 20:09:25 GMT']
+      Server: [Jetty(9.2.z-SNAPSHOT)]
+    status: {code: 200, message: OK}
+version: 1

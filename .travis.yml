@@ -7,10 +7,9 @@ python:
   - "3.6"
 # command to install dependencies
 install:
-  - pip install nose vcrpy codecov coverage
-  - pip install -r requirements.txt
+  - pip install .[dev]
 # command to run tests
-script: nosetests --with-coverage --cover-erase
+script: nosetests --with-coverage --cover-erase --cover-package=ksql
 
 after_success:
   - codecov
