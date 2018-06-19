@@ -7,12 +7,12 @@ interactions:
       Connection: [keep-alive]
       User-Agent: [python-requests/2.18.4]
     method: GET
-    uri: http://ksql-server:8080/
+    uri: http://ksql-server:8080/info
   response:
-    body: {string: '{"KSQL Server Info":{"version":"0.3"}}'}
+    body: {string: '{"KsqlServerInfo":{"version":"4.1.1-SNAPSHOT"}}'}
     headers:
       Content-Type: [application/json]
-      Date: ['Thu, 11 Jan 2018 03:44:39 GMT']
+      Date: ['Tue, 19 Jun 2018 04:09:27 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

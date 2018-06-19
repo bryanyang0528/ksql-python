@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"ksql": "show tables;"}'
     headers:
-      Accept: ['*/*']
+      Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['24']
@@ -14,7 +14,7 @@ interactions:
     body: {string: '[{"tables":{"statementText":"show tables;","tables":[]}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Thu, 11 Jan 2018 03:44:40 GMT']
+      Date: ['Tue, 19 Jun 2018 04:09:28 GMT']
       Server: [Jetty(9.2.z-SNAPSHOT)]
     status: {code: 200, message: OK}
 version: 1

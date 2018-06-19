@@ -1,0 +1,97 @@
+interactions:
+- request:
+    body: '{"ksql": "CREATE stream pageviews_original (name string, age bigint, userid
+      string, pageid bigint) WITH (kafka_topic=''exist_topic'', value_format=''DELIMITED'');"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['160']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.18.4]
+    method: POST
+    uri: http://ksql-server:8080/ksql
+  response:
+    body: {string: '[{"error":{"statementText":"CREATE stream pageviews_original (name
+        string, age bigint, userid string, pageid bigint) WITH (kafka_topic=''exist_topic'',
+        value_format=''DELIMITED'');","errorMessage":{"message":"io.confluent.ksql.util.KsqlException:
+        Topic already registered.\n\tat io.confluent.ksql.ddl.commands.RegisterTopicCommand.run(RegisterTopicCommand.java:107)\n\tat
+        io.confluent.ksql.ddl.commands.CreateStreamCommand.run(CreateStreamCommand.java:36)\n\tat
+        io.confluent.ksql.ddl.commands.DDLCommandExec.executeOnMetaStore(DDLCommandExec.java:61)\n\tat
+        io.confluent.ksql.ddl.commands.DDLCommandExec.execute(DDLCommandExec.java:55)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.executeDDLCommand(KsqlResource.java:484)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.lambda$registerDdlCommandTasks$7(KsqlResource.java:441)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.getStatementExecutionPlan(KsqlResource.java:383)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.validateStatement(KsqlResource.java:255)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.executeStatement(KsqlResource.java:228)\n\tat
+        io.confluent.ksql.rest.server.resources.KsqlResource.handleKsqlStatements(KsqlResource.java:144)\n\tat
+        sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat
+        java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory$1.invoke(ResourceMethodInvocationHandlerFactory.java:81)\n\tat
+        org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:144)\n\tat
+        org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:161)\n\tat
+        org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:160)\n\tat
+        org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:99)\n\tat
+        org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:389)\n\tat
+        org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:347)\n\tat
+        org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:102)\n\tat
+        org.glassfish.jersey.server.ServerRuntime$2.run(ServerRuntime.java:326)\n\tat
+        org.glassfish.jersey.internal.Errors$1.call(Errors.java:271)\n\tat org.glassfish.jersey.internal.Errors$1.call(Errors.java:267)\n\tat
+        org.glassfish.jersey.internal.Errors.process(Errors.java:315)\n\tat org.glassfish.jersey.internal.Errors.process(Errors.java:297)\n\tat
+        org.glassfish.jersey.internal.Errors.process(Errors.java:267)\n\tat org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:317)\n\tat
+        org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:305)\n\tat
+        org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:1154)\n\tat
+        org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:473)\n\tat
+        org.glassfish.jersey.servlet.ServletContainer.serviceImpl(ServletContainer.java:408)\n\tat
+        org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:583)\n\tat
+        org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:524)\n\tat
+        org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:461)\n\tat
+        org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1652)\n\tat
+        org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:585)\n\tat
+        org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:221)\n\tat
+        org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1127)\n\tat
+        org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:515)\n\tat
+        org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:185)\n\tat
+        org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1061)\n\tat
+        org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)\n\tat
+        org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:110)\n\tat
+        org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:97)\n\tat
+        org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:159)\n\tat
+        org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:97)\n\tat
+        org.eclipse.jetty.server.Server.handle(Server.java:499)\n\tat org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:311)\n\tat
+        org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:258)\n\tat
+        org.eclipse.jetty.io.AbstractConnection$2.run(AbstractConnection.java:544)\n\tat
+        org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:635)\n\tat
+        org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:555)\n\tat
+        java.lang.Thread.run(Thread.java:745)\n","stackTrace":["io.confluent.ksql.rest.server.resources.KsqlResource.executeDDLCommand(KsqlResource.java:486)","io.confluent.ksql.rest.server.resources.KsqlResource.lambda$registerDdlCommandTasks$7(KsqlResource.java:441)","io.confluent.ksql.rest.server.resources.KsqlResource.getStatementExecutionPlan(KsqlResource.java:383)","io.confluent.ksql.rest.server.resources.KsqlResource.validateStatement(KsqlResource.java:255)","io.confluent.ksql.rest.server.resources.KsqlResource.executeStatement(KsqlResource.java:228)","io.confluent.ksql.rest.server.resources.KsqlResource.handleKsqlStatements(KsqlResource.java:144)","sun.reflect.GeneratedMethodAccessor8.invoke(Unknown
+        Source)","sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","java.lang.reflect.Method.invoke(Method.java:498)","org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory$1.invoke(ResourceMethodInvocationHandlerFactory.java:81)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:144)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:161)","org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:160)","org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:99)","org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:389)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:347)","org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:102)","org.glassfish.jersey.server.ServerRuntime$2.run(ServerRuntime.java:326)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:271)","org.glassfish.jersey.internal.Errors$1.call(Errors.java:267)","org.glassfish.jersey.internal.Errors.process(Errors.java:315)","org.glassfish.jersey.internal.Errors.process(Errors.java:297)","org.glassfish.jersey.internal.Errors.process(Errors.java:267)","org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:317)","org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:305)","org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:1154)","org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:473)","org.glassfish.jersey.servlet.ServletContainer.serviceImpl(ServletContainer.java:408)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:583)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:524)","org.glassfish.jersey.servlet.ServletContainer.doFilter(ServletContainer.java:461)","org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1652)","org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:585)","org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:221)","org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1127)","org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:515)","org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:185)","org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1061)","org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)","org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:110)","org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:97)","org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:159)","org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:97)","org.eclipse.jetty.server.Server.handle(Server.java:499)","org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:311)","org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:258)","org.eclipse.jetty.io.AbstractConnection$2.run(AbstractConnection.java:544)","org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:635)","org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:555)","java.lang.Thread.run(Thread.java:745)"]}}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Thu, 11 Jan 2018 08:36:38 GMT']
+      Server: [Jetty(9.2.z-SNAPSHOT)]
+    status: {code: 200, message: OK}
+- request:
+    body: '{"ksql": "CREATE stream create_stream_as_with_conditions_with_startwith
+      WITH (kafka_topic=''create_stream_as_with_conditions_with_startwith'', value_format=''DELIMITED'',
+      timestamp=''logtime'') AS SELECT rowtime as logtime, * FROM pageviews_original
+      where userid = ''foo_%'';"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['269']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.18.4]
+    method: POST
+    uri: http://ksql-server:8080/ksql
+  response:
+    body: {string: '[{"currentStatus":{"statementText":"CREATE stream create_stream_as_with_conditions_with_startwith
+        WITH (kafka_topic=''create_stream_as_with_conditions_with_startwith'', value_format=''DELIMITED'',
+        timestamp=''logtime'') AS SELECT rowtime as logtime, * FROM pageviews_original
+        where userid = ''foo_%'';","commandId":"stream/CREATE_STREAM_AS_WITH_CONDITIONS_WITH_STARTWITH/create","commandStatus":{"status":"SUCCESS","message":"Stream
+        created and running"}}}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Thu, 11 Jan 2018 08:36:38 GMT']
+      Server: [Jetty(9.2.z-SNAPSHOT)]
+    status: {code: 200, message: OK}
+version: 1
