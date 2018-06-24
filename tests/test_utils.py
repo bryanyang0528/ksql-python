@@ -9,7 +9,7 @@ class TestKSQLUtils(unittest.TestCase):
 
     def setUp(self):
         self.url = "http://localhost:8088"
-        self.api_client = KSQLAPI(url=self.url)
+        self.api_client = KSQLAPI(url=self.url, check_version=False)
         self.test_prefix = "ksql_python_test"
 
         self.exist_topic = self.test_prefix + '_exist_topic'
