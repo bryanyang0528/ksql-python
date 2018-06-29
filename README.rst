@@ -136,7 +136,7 @@ a simplified api for creating stream as select
 .. code:: sql
 
   CREATE STREAM <table_name>
-  [WITH ( kafka_topip=<kafka_topic>, value_format=<value_format>, property_name=expression ... )]
+  [WITH ( kafka_topic=<kafka_topic>, value_format=<value_format>, property_name=expression ... )]
   AS SELECT  <select_columns>
   FROM <src_table>
   [WHERE <conditions>]
