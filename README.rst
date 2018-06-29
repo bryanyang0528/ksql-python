@@ -114,7 +114,7 @@ Options
   return True
 
 :If failed:
-  raise a CreatError(respose_from_ksql_server)
+  raise a CreateError(respose_from_ksql_server)
 
 create_stream_as
 ^^^^^^^^^^^^^^^^
