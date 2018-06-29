@@ -202,7 +202,7 @@ More Options
 
 There are more properties (partitions, replicas, etc...) in the official document.
 
-`KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
+`KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/0.1.x/docs/syntax-reference.md#syntax-reference>`_
 
 -  Responses
 
