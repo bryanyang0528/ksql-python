@@ -42,7 +42,7 @@ class KSQLAPI(object):
         return self.sa.ksql(ksql_string)
 
     def query(self, query_string, encoding='utf-8', chunk_size=128):
-        self.sa.query(query_string=query_string,
+        return self.sa.query(query_string=query_string,
                       encoding=encoding,
                       chunk_size=chunk_size)
 
