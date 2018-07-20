@@ -12,10 +12,10 @@ interactions:
     uri: http://localhost:8088/ksql
   response:
     body: {string: '[{"@type":"sourceDescription","statementText":"DESCRIBE EXTENDED
-        test_table;","sourceDescription":{"name":"TEST_TABLE","readQueries":[],"writeQueries":[],"schema":[{"name":"ROWTIME","type":"BIGINT"},{"name":"ROWKEY","type":"VARCHAR(STRING)"},{"name":"VIEWTIME","type":"BIGINT"},{"name":"USERID","type":"VARCHAR(STRING)"},{"name":"PAGEID","type":"VARCHAR(STRING)"}],"type":"STREAM","key":"","timestamp":"","statistics":"","errorStats":"","extended":true,"format":"DELIMITED","topic":"exist_topic","partitions":1,"replication":1}}]'}
+        test_table;","sourceDescription":{"name":"TEST_TABLE","readQueries":[],"writeQueries":[],"fields":[{"name":"ROWTIME","schema":{"type":"BIGINT","fields":null,"memberSchema":null}},{"name":"ROWKEY","schema":{"type":"STRING","fields":null,"memberSchema":null}},{"name":"VIEWTIME","schema":{"type":"BIGINT","fields":null,"memberSchema":null}},{"name":"USERID","schema":{"type":"STRING","fields":null,"memberSchema":null}},{"name":"PAGEID","schema":{"type":"STRING","fields":null,"memberSchema":null}}],"type":"STREAM","key":"","timestamp":"","statistics":"","errorStats":"","extended":true,"format":"DELIMITED","topic":"exist_topic","partitions":1,"replication":1}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Sun, 24 Jun 2018 19:57:06 GMT']
+      Date: ['Fri, 20 Jul 2018 20:08:16 GMT']
       Server: [Jetty(9.4.10.v20180503)]
     status: {code: 200, message: OK}
 - request:
@@ -35,7 +35,7 @@ interactions:
         TEST_TABLE was dropped. "}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Sun, 24 Jun 2018 19:57:06 GMT']
+      Date: ['Fri, 20 Jul 2018 20:08:16 GMT']
       Server: [Jetty(9.4.10.v20180503)]
     status: {code: 200, message: OK}
 - request:
@@ -57,7 +57,7 @@ interactions:
         created"}}]'}
     headers:
       Content-Type: [application/json]
-      Date: ['Sun, 24 Jun 2018 19:57:06 GMT']
+      Date: ['Fri, 20 Jul 2018 20:08:16 GMT']
       Server: [Jetty(9.4.10.v20180503)]
     status: {code: 200, message: OK}
 version: 1

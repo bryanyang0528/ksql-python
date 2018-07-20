@@ -33,18 +33,16 @@ class BaseAPI(object):
         try:
             r_json = r.json()
         except ValueError:
-            KSQLError("Unknown Error: {}".format(r.content))
+            r.raise_for_status()
         if r.status_code != 200:
             # seems to be the new API behavior
-            if r_json.get('@type') == 'statement_error':
+            if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
                 error_message = r_json['message']
                 error_code = r_json['error_code']
                 stackTrace = r_json['stackTrace']
                 raise KSQLError(error_message, error_code, stackTrace)
-
-
             else:
-                KSQLError("Unknown Error: {}".format(r.content))
+                raise KSQLError("Unknown Error: {}".format(r.content))
         else:
             # seems to be the old API behavior, so some errors have status 200, bug??
             if r_json[0]['@type'] == 'currentStatus' \
@@ -55,8 +53,8 @@ class BaseAPI(object):
                 raise KSQLError(error_message, error_code, stackTrace)
             return True
 
-    def ksql(self, ksql_string):
-        r = self._request(endpoint='ksql', sql_string=ksql_string)
+    def ksql(self, ksql_string, stream_properties=None):
+        r = self._request(endpoint='ksql', sql_string=ksql_string, stream_properties=stream_properties)
         self._raise_for_status(r)
         r = r.json()
         return r
@@ -70,15 +68,20 @@ class BaseAPI(object):
 
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
-                yield chunk.decode(encoding)
+                print(chunk.decode(encoding))
+                raise RuntimeError("hier")
+                #yield chunk.decode(encoding)
 
-    def _request(self, endpoint, method='post', sql_string=''):
+    def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
         sql_string = self._validate_sql_string(sql_string)
-        data = json.dumps({
+        body = {
             "ksql": sql_string
-        })
+        }
+        if stream_properties:
+            body['streamsProperties'] = stream_properties
+        data = json.dumps(body)
 
         headers = {
             "Accept": "application/json",

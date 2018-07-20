@@ -60,7 +60,7 @@ services:
   
   # Runs the Kafka KSQL Server
   ksql-server:
-    image: "confluentinc/cp-ksql-server:5.0.0-beta30"
+    image: "confluentinc/cp-ksql-server:5.0.0-beta180702222458"
     network_mode: host
     hostname: ksql-server
     ports:
@@ -89,7 +89,7 @@ services:
 
   # Runs the Kafka KSQL Server
   ksql-cli:
-    image: "confluentinc/cp-ksql-cli:5.0.0-beta30"
+    image: "confluentinc/cp-ksql-cli:5.0.0-beta180702222458"
     network_mode: host
     hostname: ksql-server
     depends_on:

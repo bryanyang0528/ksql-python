@@ -32,7 +32,7 @@ class TestKSQLAPI(unittest.TestCase):
 
     def tearDown(self):
         if utils.check_kafka_available(self.bootstrap_servers):
-            utils.drop_all_streams(self.api_client, prefix="CREATE_STREAM_AS")
+            utils.drop_all_streams(self.api_client, prefix=self.test_prefix)
 
     def test_get_url(self):
         self.assertEqual(self.api_client.get_url(), "http://localhost:8088")
@@ -56,7 +56,7 @@ class TestKSQLAPI(unittest.TestCase):
     @vcr.use_cassette('tests/vcr_cassettes/get_properties.yml')
     def test_get_properties(self):
         properties = self.api_client.get_properties()
-        self.assertEqual(properties['listeners'], "http://0.0.0.0:8088")
+        self.assertEqual(properties['ksql.schema.registry.url'], "http://localhost:8081")
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_show_table.yml')
     def test_ksql_show_tables(self):
@@ -81,6 +81,31 @@ class TestKSQLAPI(unittest.TestCase):
                        WITH (kafka_topic='{}', value_format='DELIMITED');".format(stream_name, topic)
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
+
+    @unittest.skip("does not work yet")
+    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_w_properties.yml')
+    def test_ksql_create_stream_w_properties(self):
+        """ Test GET requests """
+        topic = self.exist_topic
+        stream_name = self.test_prefix + "test_ksql_create_stream"
+        ksql_string = "CREATE STREAM {} (viewtime bigint, userid varchar, pageid varchar) \
+                       WITH (kafka_topic='{}', value_format='DELIMITED');".format(stream_name, topic)
+        streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
+        r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
+        self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
+        producer = Producer({'bootstrap.servers': self.bootstrap_servers})
+        producer.produce(self.exist_topic, "test_message2")
+        producer.flush()
+        chunk = self.api_client.query("select * from {}".format(stream_name))
+        assert False
+
+    @vcr.use_cassette('tests/vcr_cassettes/bad_requests.yml')
+    def test_bad_requests(self):
+        broken_ksql_string = "noi"
+        with self.assertRaises(KSQLError) as e:
+            r = self.api_client.ksql(broken_ksql_string)
+        the_exception = e.exception
+        self.assertEqual(the_exception.error_code, 40000)
 
     @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_by_builder.yml')
     def test_ksql_create_stream_by_builder(self):
