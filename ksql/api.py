@@ -1,6 +1,7 @@
 import functools
 import json
 import time
+import logging
 
 import requests
 from requests import Timeout
@@ -64,6 +65,8 @@ class BaseAPI(object):
 
     def _request(self, endpoint, method='post', sql_string=''):
         url = '{}/{}'.format(self.url, endpoint)
+
+        logging.debug("KSQL generated: {}".format(sql_string))
 
         sql_string = self._validate_sql_string(sql_string)
         data = json.dumps({
