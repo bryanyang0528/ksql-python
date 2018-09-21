@@ -1,5 +1,5 @@
 nose
-vcrpy
 codecov
+vcrpy==1.13.0
 coverage
 confluent-kafka[avro]
