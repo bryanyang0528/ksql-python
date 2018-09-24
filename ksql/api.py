@@ -1,6 +1,7 @@
 import functools
 import json
 import time
+import logging
 
 import requests
 from requests import Timeout
@@ -74,6 +75,8 @@ class BaseAPI(object):
 
     def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
+
+        logging.debug("KSQL generated: {}".format(sql_string))
 
         sql_string = self._validate_sql_string(sql_string)
         body = {
@@ -156,12 +159,15 @@ class SimplifiedAPI(BaseAPI):
                             topic=topic,
                             value_format=value_format)
 
-    def create_table(self, table_name, columns_type, topic, value_format):
+    def create_table(self, table_name, columns_type, topic, value_format, key):
+        if not key:
+            raise ValueError('key is required for creating a table.')
         return self._create(table_type='table',
                             table_name=table_name,
                             columns_type=columns_type,
                             topic=topic,
-                            value_format=value_format)
+                            value_format=value_format,
+                            key=key)
 
     def create_stream_as(
             self,
@@ -189,13 +195,15 @@ class SimplifiedAPI(BaseAPI):
             table_name,
             columns_type,
             topic,
-            value_format='JSON'):
+            value_format='JSON',
+            key=None):
         ksql_string = SQLBuilder.build(sql_type='create',
                                        table_type=table_type,
                                        table_name=table_name,
                                        columns_type=columns_type,
                                        topic=topic,
-                                       value_format=value_format)
+                                       value_format=value_format,
+                                       key=key)
         r = self.ksql(ksql_string)
         return True
 
