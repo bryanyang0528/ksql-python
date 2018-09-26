@@ -1,7 +1,7 @@
 version: "3"
 services:
   zookeeper:
-    image: "confluentinc/cp-zookeeper:latest"
+    image: "confluentinc/cp-zookeeper:5.0.0-1"
     network_mode: host
     restart: always
     hostname: zookeeper
@@ -14,7 +14,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka:
-    image: "confluentinc/cp-enterprise-kafka:latest"
+    image: "confluentinc/cp-enterprise-kafka:5.0.0-1"
     network_mode: host
     restart: always
     hostname: kafka
@@ -43,7 +43,7 @@ services:
       - "moby:127.0.0.1"
 
   schema-registry:
-    image: "confluentinc/cp-schema-registry:4.1.0"
+    image: "confluentinc/cp-schema-registry:5.0.0-1"
     network_mode: host
     restart: always
     hostname: localhost
@@ -60,7 +60,7 @@ services:
   
   # Runs the Kafka KSQL Server
   ksql-server:
-    image: "confluentinc/cp-ksql-server:5.0.0-beta180702222458"
+    image: "confluentinc/cp-ksql-server:5.0.0-1"
     network_mode: host
     hostname: ksql-server
     ports:
@@ -89,7 +89,7 @@ services:
 
   # Runs the Kafka KSQL Server
   ksql-cli:
-    image: "confluentinc/cp-ksql-cli:5.0.0-beta180702222458"
+    image: "confluentinc/cp-ksql-cli:5.0.0-1"
     network_mode: host
     hostname: ksql-server
     depends_on:

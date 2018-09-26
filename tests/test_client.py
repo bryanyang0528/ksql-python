@@ -82,22 +82,26 @@ class TestKSQLAPI(unittest.TestCase):
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
 
-    @unittest.skip("does not work yet")
-    @vcr.use_cassette('tests/vcr_cassettes/ksql_create_stream_w_properties.yml')
+    @unittest.skipIf(not utils.check_kafka_available('localhost:29092'), "vcrpy does not support streams yet")
     def test_ksql_create_stream_w_properties(self):
         """ Test GET requests """
         topic = self.exist_topic
         stream_name = self.test_prefix + "test_ksql_create_stream"
-        ksql_string = "CREATE STREAM {} (viewtime bigint, userid varchar, pageid varchar) \
-                       WITH (kafka_topic='{}', value_format='DELIMITED');".format(stream_name, topic)
+        stream_name = "test_ksql_create_stream"
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
+                       WITH (kafka_topic='{}', value_format='JSON');".format(stream_name, topic)
         streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
-        r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
-        self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
+        if 'TEST_KSQL_CREATE_STREAM' not in utils.get_all_streams(self.api_client):
+            r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
+            self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
         producer = Producer({'bootstrap.servers': self.bootstrap_servers})
-        producer.produce(self.exist_topic, "test_message2")
+        producer.produce(self.exist_topic, '''{"order_id":3,"total_amount":43,"customer_name":"Palo Alto"}''')
         producer.flush()
-        chunk = self.api_client.query("select * from {}".format(stream_name))
-        assert False
+        print()
+        chunks = self.api_client.query("select * from {}".format(stream_name), stream_properties=streamProperties, idle_timeout=10)
+        for chunk in chunks:
+            pass
+            assert json.loads(chunk)['row']['columns'][-1]=='Palo Alto'
 
     @vcr.use_cassette('tests/vcr_cassettes/bad_requests.yml')
     def test_bad_requests(self):

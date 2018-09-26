@@ -1,5 +1,6 @@
 import functools
 import json
+import threading
 import time
 
 import requests
@@ -59,18 +60,23 @@ class BaseAPI(object):
         r = r.json()
         return r
 
-    def query(self, query_string, encoding='utf-8', chunk_size=128):
+    def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
         """
         Process streaming incoming data.
 
         """
-        r = self._request(endpoint='query', sql_string=query_string)
-
-        for chunk in r.iter_content(chunk_size=chunk_size):
+        streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
+        start_idle = None
+        for chunk in streaming_response.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
-                print(chunk.decode(encoding))
-                raise RuntimeError("hier")
-                #yield chunk.decode(encoding)
+                start_idle = None
+                yield chunk.decode(encoding)
+            else:
+                if not start_idle:
+                    start_idle = time.time()
+                if idle_timeout and time.time() - start_idle > idle_timeout:
+                    print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
+                    return
 
     def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
