@@ -114,7 +114,7 @@ Options
   return True
 
 :If failed:
-  raise a CreatError(respose_from_ksql_server)
+  raise a CreateError(respose_from_ksql_server)
 
 create_stream_as
 ^^^^^^^^^^^^^^^^
@@ -136,7 +136,7 @@ a simplified api for creating stream as select
 .. code:: sql
 
   CREATE STREAM <table_name>
-  [WITH ( kafka_topip=<kafka_topic>, value_format=<value_format>, property_name=expression ... )]
+  [WITH ( kafka_topic=<kafka_topic>, value_format=<value_format>, property_name=expression ... )]
   AS SELECT  <select_columns>
   FROM <src_table>
   [WHERE <conditions>]
@@ -202,7 +202,7 @@ More Options
 
 There are more properties (partitions, replicas, etc...) in the official document.
 
-`KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference>`_
+`KSQL Syntax Reference <https://github.com/confluentinc/ksql/blob/0.1.x/docs/syntax-reference.md#syntax-reference>`_
 
 -  Responses
 
