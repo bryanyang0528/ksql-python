@@ -41,8 +41,8 @@ class BaseAPI(object):
             r = 'Message: ' + r[0]['error']['errorMessage']['message']
             raise CreateError(r)
 
-    def ksql(self, ksql_string):
-        r = self._request(endpoint='ksql', sql_string=ksql_string)
+    def ksql(self, ksql_string, streams_properties=None):
+        r = self._request(endpoint='ksql', sql_string=ksql_string, streams_properties=streams_properties)
 
         if r.status_code == 200:
             r = r.json()
@@ -52,26 +52,31 @@ class BaseAPI(object):
                 'Status Code: {}.\nMessage: {}'.format(
                     r.status_code, r.content))
 
-    def query(self, query_string, encoding='utf-8', chunk_size=128):
+    def query(self, query_string, encoding='utf-8', chunk_size=128, streams_properties=None):
         """
         Process streaming incoming data.
 
         """
-        r = self._request(endpoint='query', sql_string=query_string)
+        r = self._request(endpoint='query', sql_string=query_string, streams_properties=streams_properties)
 
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
-                yield chunk.decode(encoding)
+                print(chunk)
+                # yield chunk.decode(encoding)
+                print(chunk.decode(encoding))
 
-    def _request(self, endpoint, method='post', sql_string=''):
+    def _request(self, endpoint, method='post', sql_string='', streams_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
 
         sql_string = self._validate_sql_string(sql_string)
-        data = json.dumps({
-            "ksql": sql_string
-        })
+
+        json_struct = {'ksql': sql_string}
+        if streams_properties is not None:
+            json_struct['streamsProperties'] = streams_properties
+
+        data = json.dumps(json_struct)
 
         headers = {
             "Accept": "application/json",
