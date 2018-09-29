@@ -46,7 +46,7 @@ Setup
     import logging
     from ksql import KSQLAPI
     logging.basicConfig(level=logging.DEBUG)
-    client = KSQLAPI('http://localhost:8088')
+    client = KSQLAPI('http://ksql-server:8088')
 
 Options
 ~~~~~~~
