@@ -15,7 +15,7 @@ else:
 
 
 # Get version from __init__.py file
-VERSION = "0.3.0.2.22"
+VERSION = "0.5.1"
 
 here = os.path.dirname(__file__)
 

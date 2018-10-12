@@ -3,6 +3,8 @@ ksql-python
 
 A python wrapper for the KSQL REST API. Easily interact with the KSQL REST API using this library.
 
+Supported KSQL version: 5.x
+
 .. image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
   :target: https://travis-ci.org/bryanyang0528/ksql-python
 
@@ -32,7 +34,7 @@ This is the GITHUB page of KSQL. https://github.com/confluentinc/ksql
 Setup
 ~~~~~
 
--  Setup for the KSql API:
+-  Setup for the KSQL API:
 
 .. code:: python
 
