@@ -82,6 +82,13 @@ It will execute sql query and keep listening streaming data.
 
     client.query('select * from table1')
 
+This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop:
+
+````
+for item in query: 
+  print(item)
+````
+
 -  Example Response
 
    ::
