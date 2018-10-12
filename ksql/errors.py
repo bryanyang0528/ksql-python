@@ -40,3 +40,11 @@ class InvalidQueryError(Exception):
 
     def __init__(self, query):
         self.msg = "The query:\n{}\n is invalid".format(query)
+
+
+class KSQLError(Exception):
+
+    def __init__(self, e, error_code=None, stackTrace=None):
+        self.msg = "{}".format(e)
+        self.error_code = error_code
+        self.stackTrace = stackTrace

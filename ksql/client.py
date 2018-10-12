@@ -36,15 +36,17 @@ class KSQLAPI(object):
 
     def get_properties(self):
         properties = self.sa.ksql("show properties;")
-        return properties[0]['properties']['properties']
+        return properties[0]['properties']
 
-    def ksql(self, ksql_string):
-        return self.sa.ksql(ksql_string)
+    def ksql(self, ksql_string, stream_properties=None):
+        return self.sa.ksql(ksql_string, stream_properties=stream_properties)
 
-    def query(self, query_string, encoding='utf-8', chunk_size=128):
-        self.sa.query(query_string=query_string,
+    def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
+        return self.sa.query(query_string=query_string,
                       encoding=encoding,
-                      chunk_size=chunk_size)
+                      chunk_size=chunk_size,
+                      stream_properties=stream_properties,
+                      idle_timeout=idle_timeout)
 
     def create_stream(
             self,
