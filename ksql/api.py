@@ -1,5 +1,6 @@
 import functools
 import json
+import threading
 import time
 import logging
 
@@ -7,7 +8,7 @@ import requests
 from requests import Timeout
 
 from ksql.builder import SQLBuilder
-from ksql.errors import CreateError, InvalidQueryError
+from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
 
 class BaseAPI(object):
@@ -15,7 +16,7 @@ class BaseAPI(object):
         self.url = url
         self.max_retries = kwargs.get("max_retries", 3)
         self.delay = kwargs.get("delay", 0)
-        self.timeout = kwargs.get("timeout", 5)
+        self.timeout = kwargs.get("timeout", 15)
 
     def get_timout(self):
         return self.timeout
@@ -30,48 +31,66 @@ class BaseAPI(object):
         return sql_string
 
     @staticmethod
-    def _parse_ksql_res(r, error):
-        if 'commandStatus' in str(r[0]):
-            status = r[0]['currentStatus']['commandStatus']['status']
-            if status == 'SUCCESS':
-                return True
+    def _raise_for_status(r):
+        try:
+            r_json = r.json()
+        except ValueError:
+            r.raise_for_status()
+        if r.status_code != 200:
+            # seems to be the new API behavior
+            if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
+                error_message = r_json['message']
+                error_code = r_json['error_code']
+                stackTrace = r_json['stackTrace']
+                raise KSQLError(error_message, error_code, stackTrace)
             else:
-                raise CreateError(r[0]['currentStatus']['commandStatus']['message'])
+                raise KSQLError("Unknown Error: {}".format(r.content))
         else:
-            r = 'Message: ' + r[0]['error']['errorMessage']['message']
-            raise CreateError(r)
+            # seems to be the old API behavior, so some errors have status 200, bug??
+            if r_json[0]['@type'] == 'currentStatus' \
+                    and r_json[0]['commandStatus']['status'] == 'ERROR':
+                error_message = r_json[0]['commandStatus']['message']
+                error_code = None
+                stackTrace = None
+                raise KSQLError(error_message, error_code, stackTrace)
+            return True
 
-    def ksql(self, ksql_string):
-        r = self._request(endpoint='ksql', sql_string=ksql_string)
+    def ksql(self, ksql_string, stream_properties=None):
+        r = self._request(endpoint='ksql', sql_string=ksql_string, stream_properties=stream_properties)
+        self._raise_for_status(r)
+        r = r.json()
+        return r
 
-        if r.status_code == 200:
-            r = r.json()
-            return r
-        else:
-            raise ValueError(
-                'Status Code: {}.\nMessage: {}'.format(
-                    r.status_code, r.content))
-
-    def query(self, query_string, encoding='utf-8', chunk_size=128):
+    def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
         """
         Process streaming incoming data.
 
         """
-        r = self._request(endpoint='query', sql_string=query_string)
-
-        for chunk in r.iter_content(chunk_size=chunk_size):
+        streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
+        start_idle = None
+        for chunk in streaming_response.iter_content(chunk_size=chunk_size):
             if chunk != b'\n':
+                start_idle = None
                 yield chunk.decode(encoding)
+            else:
+                if not start_idle:
+                    start_idle = time.time()
+                if idle_timeout and time.time() - start_idle > idle_timeout:
+                    print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
+                    return
 
-    def _request(self, endpoint, method='post', sql_string=''):
+    def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
 
         sql_string = self._validate_sql_string(sql_string)
-        data = json.dumps({
+        body = {
             "ksql": sql_string
-        })
+        }
+        if stream_properties:
+            body['streamsProperties'] = stream_properties
+        data = json.dumps(body)
 
         headers = {
             "Accept": "application/json",
@@ -192,7 +211,7 @@ class SimplifiedAPI(BaseAPI):
                                        value_format=value_format,
                                        key=key)
         r = self.ksql(ksql_string)
-        return self._parse_ksql_res(r, CreateError)
+        return True
 
     @BaseAPI.retry(exceptions=(Timeout, CreateError))
     def _create_as(
@@ -217,4 +236,4 @@ class SimplifiedAPI(BaseAPI):
                                        partition_by=partition_by,
                                        **kwargs)
         r = self.ksql(ksql_string)
-        return self._parse_ksql_res(r, CreateError)
+        return True
