@@ -84,10 +84,11 @@ It will execute sql query and keep listening streaming data.
 
 This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop:
 
-````
-for item in query: 
-  print(item)
-````
+.. code:: python
+    
+    for item in query: 
+      print(item)
+
 
 -  Example Response
 
