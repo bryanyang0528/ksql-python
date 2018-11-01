@@ -39,7 +39,7 @@ Setup
 .. code:: python
 
     from ksql import KSQLAPI
-    client = KSQLAPI('http://ksql-server:8080')
+    client = KSQLAPI('http://ksql-server:8088')
 
 - Setup for KSql API with logging enabled:
 
