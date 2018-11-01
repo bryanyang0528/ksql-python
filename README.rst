@@ -91,13 +91,14 @@ It will execute sql query and keep listening streaming data.
 
     client.query('select * from table1')
 
-This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop:
+This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop. Here is a complete example:
 
 .. code:: python
     
-    for item in query: 
-      print(item)
-
+  from ksql import KSQLAPI
+  client = KSQLAPI('http://localhost:8088')
+  query = client.query('select * from table1')
+  for item in query: print(item)
 
 -  Example Response
 
