@@ -29,10 +29,19 @@ Or
 Getting Started
 ---------------
 
+Setup for KSQL
+~~~~~~~~~~~~~~~
+
 This is the GITHUB page of KSQL. https://github.com/confluentinc/ksql
 
-Setup
-~~~~~
+If you have installed open source Confluent CLI (e.g. by installing Confluent Open Source or Enterprise Platform), you can start KSQL and its dependencies with one single command:
+
+.. code:: bash
+
+    confluent start ksql-server
+
+Setup for ksql-python API
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Setup for the KSQL API:
 
