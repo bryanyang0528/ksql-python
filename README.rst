@@ -29,17 +29,26 @@ Or
 Getting Started
 ---------------
 
+Setup for KSQL
+~~~~~~~~~~~~~~~
+
 This is the GITHUB page of KSQL. https://github.com/confluentinc/ksql
 
-Setup
-~~~~~
+If you have installed open source Confluent CLI (e.g. by installing Confluent Open Source or Enterprise Platform), you can start KSQL and its dependencies with one single command:
+
+.. code:: bash
+
+    confluent start ksql-server
+
+Setup for ksql-python API
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Setup for the KSQL API:
 
 .. code:: python
 
     from ksql import KSQLAPI
-    client = KSQLAPI('http://ksql-server:8080')
+    client = KSQLAPI('http://ksql-server:8088')
 
 - Setup for KSql API with logging enabled:
 
@@ -82,13 +91,14 @@ It will execute sql query and keep listening streaming data.
 
     client.query('select * from table1')
 
-This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop:
+This command returns a generator. It can be printed e.g. by reading its values via `next(query)` or a for loop. Here is a complete example:
 
 .. code:: python
     
-    for item in query: 
-      print(item)
-
+  from ksql import KSQLAPI
+  client = KSQLAPI('http://localhost:8088')
+  query = client.query('select * from table1')
+  for item in query: print(item)
 
 -  Example Response
 
