@@ -76,8 +76,8 @@ Main Methods
 ksql
 ^^^^
 
-This method can be used for some KSQL features which is not supported via other specific methods like query, create_stream or create_stream_as.
-The following example shows how to execute the "SHOW TABLES" statement:
+This method can be used for some KSQL features which are not supported via other specific methods like ``query``, ``create_stream`` or ``create_stream_as``.
+The following example shows how to execute the ``show tables`` statement:
 
 .. code:: python
 
@@ -203,7 +203,7 @@ Options
 KSQL JOINs
 ~~~~~~~~~~~~~~
 
-KSQL JOINs between Streams and Tables are not supported yet via explicit methods, but you can use the ksql method for this like the following:
+KSQL JOINs between Streams and Tables are not supported yet via explicit methods, but you can use the ``ksql`` method for this like the following:
 
 .. code:: python
 
