@@ -13,6 +13,13 @@ if LooseVersion(pip.__version__) >= "10.0.0":
 else:
     from pip.req import parse_requirements
 
+def get_install_requirements(path):
+    content = open(os.path.join(os.path.dirname(__file__), path)).read()
+    return [
+        req
+        for req in content.split("\n")
+        if req != '' and not req.startswith('#')
+    ]
 
 # Get version from __init__.py file
 VERSION = "0.5.1"
