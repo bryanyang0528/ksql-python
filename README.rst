@@ -76,6 +76,8 @@ Main Methods
 ksql
 ^^^^
 
+This method can be used for any KSQL feature which is not supported via other specific methods like query, create_stream or create_stream_as.
+
 .. code:: python
 
     client.ksql('show tables')
@@ -196,6 +198,15 @@ Options
 +-------------------+-----------+----------+--------------------------------------------------------------+
 | ``kwargs``        | pair      | no       | please provide ``key=value`` pairs. Please see more options. |
 +-------------------+-----------+----------+--------------------------------------------------------------+
+
+KSQL JOINs
+~~~~~~~~~~~~~~
+
+KSQL JOINs between Streams and Tables are not supported yet via explicit methods, but you can use the ksql method for this like the following:
+
+.. code:: python
+
+    client.ksql("CREATE STREAM join_per_user WITH (VALUE_FORMAT='AVRO', KAFKA_TOPIC='join_per_user') AS SELECT Time, Amount FROM source c INNER JOIN users u on c.user = u.userid WHERE u.USERID = 1")
 
 FileUpload
 ~~~~~~~~~~~~~~
