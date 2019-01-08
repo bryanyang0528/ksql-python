@@ -50,7 +50,7 @@ Setup for ksql-python API
     from ksql import KSQLAPI
     client = KSQLAPI('http://ksql-server:8088')
 
-- Setup for KSql API with logging enabled:
+- Setup for KSQl API with logging enabled:
 
 .. code:: python
 
@@ -76,7 +76,8 @@ Main Methods
 ksql
 ^^^^
 
-This method can be used for any KSQL feature which is not supported via other specific methods like query, create_stream or create_stream_as.
+This method can be used for some KSQL features which is not supported via other specific methods like query, create_stream or create_stream_as.
+The following example shows how to execute the "SHOW TABLES" statement:
 
 .. code:: python
 
