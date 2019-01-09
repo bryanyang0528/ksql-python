@@ -13,6 +13,13 @@ if LooseVersion(pip.__version__) >= "10.0.0":
 else:
     from pip.req import parse_requirements
 
+def get_install_requirements(path):
+    content = open(os.path.join(os.path.dirname(__file__), path)).read()
+    return [
+        req
+        for req in content.split("\n")
+        if req != '' and not req.startswith('#')
+    ]
 
 # Get version from __init__.py file
 VERSION = "0.5.1"
@@ -22,15 +29,14 @@ here = os.path.dirname(__file__)
 # Get long description
 README = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
-
-def get_install_requirements(path):
-    content = open(os.path.join(os.path.dirname(__file__), path)).read()
-    return [
-        req
-        for req in content.split("\n")
-        if req != '' and not req.startswith('#')
-    ]
-
+setuptools_kwargs = {
+    'install_requires': [
+	    'requests',
+		'six',
+		'urllib3'
+    ],
+    'zip_safe': False,
+}
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -38,9 +44,9 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name="ksql",
     version=VERSION,
-    description="A Python wrapper for the KSql REST API",
+    description="A Python wrapper for the KSQL REST API",
     long_description=README,
-    author="Bryan Yang @ Vpon",
+    author="Bryan Yang",
     author_email="kenshin200528@gmail.com",
     url="https://github.com/bryanyang0528/ksql-python",
     license="MIT License",
@@ -49,7 +55,6 @@ setup(
     ],
     include_package_data=True,
     platforms=['any'],
-    install_requires=get_install_requirements("requirements.txt"),
     extras_require={
         "dev": get_install_requirements("test-requirements.txt")
     },
@@ -66,4 +71,5 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
+    **setuptools_kwargs
 )
