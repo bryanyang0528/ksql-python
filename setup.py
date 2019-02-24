@@ -22,7 +22,7 @@ def get_install_requirements(path):
     ]
 
 # Get version from __init__.py file
-VERSION = "0.5.1"
+VERSION = "0.5.1.1"
 
 here = os.path.dirname(__file__)
 
