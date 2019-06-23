@@ -4,9 +4,8 @@ import threading
 import time
 import logging
 
-import requests
+import urllib
 from requests import Timeout
-
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
@@ -31,12 +30,9 @@ class BaseAPI(object):
         return sql_string
 
     @staticmethod
-    def _raise_for_status(r):
-        try:
-            r_json = r.json()
-        except ValueError:
-            r.raise_for_status()
-        if r.status_code != 200:
+    def _raise_for_status(r, response):
+        r_json = json.loads(response)
+        if r.getcode() != 200:
             # seems to be the new API behavior
             if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
                 error_message = r_json['message']
@@ -57,9 +53,10 @@ class BaseAPI(object):
 
     def ksql(self, ksql_string, stream_properties=None):
         r = self._request(endpoint='ksql', sql_string=ksql_string, stream_properties=stream_properties)
-        self._raise_for_status(r)
-        r = r.json()
-        return r
+        response = r.read().decode('utf-8')
+        self._raise_for_status(r, response)
+        res = json.loads(response)
+        return res
 
     def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
         """
@@ -68,7 +65,7 @@ class BaseAPI(object):
         """
         streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
         start_idle = None
-        for chunk in streaming_response.iter_content(chunk_size=chunk_size):
+        for chunk in streaming_response:
             if chunk != b'\n':
                 start_idle = None
                 yield chunk.decode(encoding)
@@ -79,7 +76,7 @@ class BaseAPI(object):
                     print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
                     return
 
-    def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
+    def _request(self, endpoint, method='POST', sql_string='', stream_properties=None, encoding='utf-8'):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
@@ -90,7 +87,7 @@ class BaseAPI(object):
         }
         if stream_properties:
             body['streamsProperties'] = stream_properties
-        data = json.dumps(body)
+        data = json.dumps(body).encode(encoding)
 
         headers = {
             "Accept": "application/json",
@@ -102,14 +99,13 @@ class BaseAPI(object):
         else:
             stream = False
 
-        r = requests.request(
-            method=method,
+        req = urllib.request.Request(
             url=url,
             data=data,
-            timeout=self.timeout,
             headers=headers,
-            stream=stream)
-
+            method=method)
+        
+        r = urllib.request.urlopen(req, timeout=self.timeout)
         return r
 
     @staticmethod
