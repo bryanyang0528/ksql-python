@@ -5,7 +5,7 @@ import time
 import logging
 
 import urllib
-from requests import Timeout
+from socket import timeout
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
@@ -94,10 +94,7 @@ class BaseAPI(object):
             "Content-Type": "application/json"
         }
 
-        if endpoint == 'query':
-            stream = True
-        else:
-            stream = False
+        method = method.upper()
 
         req = urllib.request.Request(
             url=url,
@@ -209,7 +206,7 @@ class SimplifiedAPI(BaseAPI):
         r = self.ksql(ksql_string)
         return True
 
-    @BaseAPI.retry(exceptions=(Timeout, CreateError))
+    @BaseAPI.retry(exceptions=(timeout, CreateError))
     def _create_as(
             self,
             table_type,
