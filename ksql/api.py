@@ -1,6 +1,5 @@
 import functools
 import json
-import threading
 import time
 import logging
 
@@ -17,6 +16,8 @@ class BaseAPI(object):
         self.max_retries = kwargs.get("max_retries", 3)
         self.delay = kwargs.get("delay", 0)
         self.timeout = kwargs.get("timeout", 15)
+        self.api_key = kwargs.get("api_key")
+        self.secret = kwargs.get("secret")
 
     def get_timout(self):
         return self.timeout
@@ -79,6 +80,9 @@ class BaseAPI(object):
                     print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
                     return
 
+    def get_request(self, endpoint):
+        return requests.get(endpoint, auth=(self.api_key, self.secret))
+
     def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
@@ -108,7 +112,8 @@ class BaseAPI(object):
             data=data,
             timeout=self.timeout,
             headers=headers,
-            stream=stream)
+            stream=stream,
+            auth=(self.api_key, self.secret))
 
         return r
 

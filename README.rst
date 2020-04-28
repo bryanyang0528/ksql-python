@@ -59,6 +59,13 @@ Setup for ksql-python API
     logging.basicConfig(level=logging.DEBUG)
     client = KSQLAPI('http://ksql-server:8088')
 
+- Setup for KSQL API with Basic Authentication
+
+.. code:: python
+
+    from ksql import KSQLAPI
+    client = KSQLAPI('http://ksql-server:8088', api_key="your_key", secret="your_secret")
+
 Options
 ~~~~~~~
 
@@ -68,6 +75,10 @@ Options
 | ``url``       | string    | yes        | Your ksql-server url. Example: ``http://ksql-server:8080``   |
 +---------------+-----------+------------+--------------------------------------------------------------+
 | ``timeout``   | integer   | no         | Timout for Requests. Default: ``5``                          |
++---------------+-----------+------------+--------------------------------------------------------------+
+| ``api_key``   | string    | no         | API Key to use on the requests                               |
++---------------+-----------+------------+--------------------------------------------------------------+
+| ``secret``    | string    | no         | Secret to use on the requests                                |
 +---------------+-----------+------------+--------------------------------------------------------------+
 
 Main Methods

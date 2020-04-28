@@ -1,8 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import requests
-
 from ksql.api import SimplifiedAPI
 
 
@@ -10,6 +8,10 @@ class KSQLAPI(object):
     """ API Class """
 
     def __init__(self, url, max_retries=3, check_version=True, **kwargs):
+        """
+        You can use a Basic Authentication with this API, for now we accept the api_key/secret based on the Confluent
+        Cloud implementation. So you just need to put on the kwargs the api_key and secret.
+        """
         self.url = url
         self.sa = SimplifiedAPI(url, max_retries=max_retries, **kwargs)
         if check_version is True:
@@ -23,7 +25,7 @@ class KSQLAPI(object):
         return self.sa.get_timout()
 
     def get_ksql_version(self):
-        r = requests.get(self.url + "/info")
+        r = self.sa.get_request(self.url + "/info")
         if r.status_code == 200:
             info = r.json().get('KsqlServerInfo')
             version = info.get('version')
