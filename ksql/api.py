@@ -1,6 +1,5 @@
 import functools
 import json
-import threading
 import time
 import logging
 
@@ -16,6 +15,8 @@ class BaseAPI(object):
         self.max_retries = kwargs.get("max_retries", 3)
         self.delay = kwargs.get("delay", 0)
         self.timeout = kwargs.get("timeout", 15)
+        self.api_key = kwargs.get("api_key")
+        self.secret = kwargs.get("secret")
 
     def get_timout(self):
         return self.timeout
