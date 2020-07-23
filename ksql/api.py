@@ -101,7 +101,7 @@ class BaseAPI(object):
         
         if self.api_key and self.secret:
             base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
-            headers["Authorization"] = "Basic {}" % base64string) 
+            headers["Authorization"] = "Basic {}" % base64string 
         
         if endpoint == 'query':
             stream = True
