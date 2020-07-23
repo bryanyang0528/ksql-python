@@ -4,6 +4,7 @@ import time
 import logging
 
 import urllib
+from urllib.request import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, build_opener
 from socket import timeout
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, KSQLError, InvalidQueryError
@@ -97,7 +98,11 @@ class BaseAPI(object):
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
-
+        
+        if self.api_key and self.secret:
+            base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
+            headers["Authorization"] = "Basic {}" % base64string) 
+        
         if endpoint == 'query':
             stream = True
         else:
@@ -110,8 +115,7 @@ class BaseAPI(object):
             data=data,
             headers=headers,
             method=method,
-            stream=stream,
-            auth=(self.api_key, self.secret)
+            stream=stream
         )
         
         r = urllib.request.urlopen(req, timeout=self.timeout)
