@@ -103,19 +103,13 @@ class BaseAPI(object):
             base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
             headers["Authorization"] = "Basic {}" % base64string 
         
-        if endpoint == 'query':
-            stream = True
-        else:
-            stream = False
-
         method = method.upper()
 
         req = urllib.request.Request(
             url=url,
             data=data,
             headers=headers,
-            method=method,
-            stream=stream
+            method=method
         )
         
         r = urllib.request.urlopen(req, timeout=self.timeout)
