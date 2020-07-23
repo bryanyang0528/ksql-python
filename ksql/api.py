@@ -80,7 +80,7 @@ class BaseAPI(object):
     def get_request(self, endpoint):
         return requests.get(endpoint, auth=(self.api_key, self.secret))
            
-    def _request(self, endpoint, method='POST', sql_string='', stream_properties=None, encoding='utf-8'):
+    def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
@@ -91,12 +91,17 @@ class BaseAPI(object):
         }
         if stream_properties:
             body['streamsProperties'] = stream_properties
-        data = json.dumps(body).encode(encoding)
+        data = json.dumps(body)
 
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
+
+        if endpoint == 'query':
+            stream = True
+        else:
+            stream = False
 
         method = method.upper()
 
