@@ -77,6 +77,9 @@ class BaseAPI(object):
                     print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
                     return
 
+    def get_request(self, endpoint):
+        return requests.get(endpoint, auth=(self.api_key, self.secret))
+           
     def _request(self, endpoint, method='POST', sql_string='', stream_properties=None, encoding='utf-8'):
         url = '{}/{}'.format(self.url, endpoint)
 
@@ -101,7 +104,10 @@ class BaseAPI(object):
             url=url,
             data=data,
             headers=headers,
-            method=method)
+            method=method,
+            stream=stream,
+            auth=(self.api_key, self.secret)
+        )
         
         r = urllib.request.urlopen(req, timeout=self.timeout)
         return r
