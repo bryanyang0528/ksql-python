@@ -69,21 +69,24 @@ class BaseAPI(object):
         """
         streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
         start_idle = None
-        for chunk in streaming_response.iter_content(chunk_size=chunk_size):
-            if chunk != b'\n':
-                start_idle = None
-                yield chunk.decode(encoding)
-            else:
-                if not start_idle:
-                    start_idle = time.time()
-                if idle_timeout and time.time() - start_idle > idle_timeout:
-                    print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
-                    return
+        if streaming_response.status_code == 200:
+            for chunk in streaming_response.iter_content(chunk_size=chunk_size):
+                if chunk != b'\n':
+                    start_idle = None
+                    yield chunk.decode(encoding)
+                else:
+                    if not start_idle:
+                        start_idle = time.time()
+                    if idle_timeout and time.time() - start_idle > idle_timeout:
+                        print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
+                        return
+        else:
+            raise ValueError('Return code is {}.'.format(streaming_response.status_code))
 
     def get_request(self, endpoint):
         return requests.get(endpoint, auth=(self.api_key, self.secret))
 
-    def _request(self, endpoint, method='post', sql_string='', stream_properties=None):
+    def _request(self, endpoint, sql_string, method='post', stream_properties=None):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
