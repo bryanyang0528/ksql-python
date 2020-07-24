@@ -119,7 +119,7 @@ class BaseAPI(object):
             r = urllib.request.urlopen(req, timeout=self.timeout)
         except urllib.error.HTTPError as e:
             try:
-                content = json.loads(e.read())
+                content = json.loads(e.read().decode(encoding) )
             except Exception as e:
                 raise ValueError(e)
             else:
