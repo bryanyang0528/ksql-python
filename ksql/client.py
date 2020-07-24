@@ -47,7 +47,7 @@ class KSQLAPI(object):
             encoding=encoding,
             chunk_size=chunk_size,
             stream_properties=stream_properties,
-            idle_timeout=idle_timeout
+            idle_timeout=idle_timeout,
         )
 
     def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
@@ -80,5 +80,5 @@ class KSQLAPI(object):
             value_format=value_format,
             conditions=conditions,
             partition_by=partition_by,
-            **kwargs
+            **kwargs,
         )

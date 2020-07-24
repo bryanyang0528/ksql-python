@@ -190,7 +190,7 @@ class SimplifiedAPI(BaseAPI):
         value_format="JSON",
         conditions=[],
         partition_by=None,
-        **kwargs,
+        **kwargs
     ):
         return self._create_as(
             table_type="stream",
@@ -228,7 +228,7 @@ class SimplifiedAPI(BaseAPI):
         value_format="JSON",
         conditions=[],
         partition_by=None,
-        **kwargs,
+        **kwargs
     ):
         ksql_string = SQLBuilder.build(
             sql_type="create_as",
