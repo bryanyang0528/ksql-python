@@ -3,7 +3,8 @@ ksql-python
 
 A python wrapper for the KSQL REST API. Easily interact with the KSQL REST API using this library.
 
-Supported KSQL version: 5.x
+Supported KSQLDB version: 0.10.1+
+Supported Python version: 3.5+
 
 .. image:: https://travis-ci.org/bryanyang0528/ksql-python.svg?branch=master
   :target: https://travis-ci.org/bryanyang0528/ksql-python

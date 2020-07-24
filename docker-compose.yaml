@@ -1,109 +1,94 @@
 version: "3"
 services:
   zookeeper:
-    image: "confluentinc/cp-zookeeper:5.0.0-1"
-    network_mode: host
-    restart: always
+    image: confluentinc/cp-zookeeper:5.5.0
     hostname: zookeeper
+    container_name: zookeeper
     ports:
-      - '32181:32181'
+      - "2181:2181"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    extra_hosts:
-      - "moby:127.0.0.1"
 
-  kafka:
-    image: "confluentinc/cp-enterprise-kafka:5.0.0-1"
-    network_mode: host
-    restart: always
-    hostname: kafka
-    ports:
-      - '9092:9092'
-      - '29092:29092'
+  broker:
+    image: confluentinc/cp-enterprise-kafka:5.5.0
+    hostname: broker
+    container_name: broker
     depends_on:
       - zookeeper
+    ports:
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LOG_MESSAGE_TIMESTAMP_TYPE: 'LogAppendTime'
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:29092
-      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:32181
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      CONFLUENT_METRICS_ENABLE: 'true'
-      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-    extra_hosts:
-      - "moby:127.0.0.1"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
   schema-registry:
-    image: "confluentinc/cp-schema-registry:5.0.0-1"
-    network_mode: host
-    restart: always
-    hostname: localhost
+    image: confluentinc/cp-schema-registry:5.5.0
+    hostname: schema-registry
+    container_name: schema-registry
     depends_on:
       - zookeeper
-      - kafka
+      - broker
     ports:
-      - '8081:8081'
+      - "8081:8081"
     environment:
-      SCHEMA_REGISTRY_HOST_NAME: localhost
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
-    extra_hosts:
-      - "moby:127.0.0.1"
-  
-  # Runs the Kafka KSQL Server
-  ksql-server:
-    image: "confluentinc/cp-ksql-server:5.0.0-1"
-    network_mode: host
-    hostname: ksql-server
-    ports:
-      - '8088:8088'
-    depends_on:
-      - kafka
-      - schema-registry
-    # Note: The container's `run` script will perform the same readiness checks
-    # for Kafka and Confluent Schema Registry, but that's ok because they complete fast.
-    # The reason we check for readiness here is that we can insert a sleep time
-    # for topic creation before we start the application.
-    command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b localhost:29092 1 20 && \
-                       echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready localhost 8081 20 && \
-                       echo Waiting a few seconds for topic creation to finish... && \
-                       sleep 2 && \
-                       /usr/bin/ksql-server-start /etc/ksql/ksql-server.properties'"
-    environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_OPTS: "-Dbootstrap.servers=localhost:29092 -Dksql.schema.registry.url=http://localhost:8081 -Dlisteners=http://0.0.0.0:8088"
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
-      #KSQL_STREAMS_AUTO_OFFSET_RESET: "earliest"
-    extra_hosts:
-      - "moby:127.0.0.1"
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
-  # Runs the Kafka KSQL Server
-  ksql-cli:
-    image: "confluentinc/cp-ksql-cli:5.0.0-1"
-    network_mode: host
-    hostname: ksql-server
+  ksqldb-server:
+    image: confluentinc/ksqldb-server:0.10.1
+    hostname: ksqldb-server
+    container_name: ksqldb-server
     depends_on:
-      - ksql-server
-    extra_hosts:
-      - "moby:127.0.0.1"
+      - broker
+      - schema-registry
+    ports:
+      - "8088:8088"
+    volumes:
+      - "./confluent-hub-components/:/usr/share/kafka/plugins/"
+    environment:
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_BOOTSTRAP_SERVERS: "broker:9092"
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_CONNECT_GROUP_ID: "ksql-connect-cluster"
+      KSQL_CONNECT_BOOTSTRAP_SERVERS: "broker:9092"
+      KSQL_CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      KSQL_CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      KSQL_CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      KSQL_CONNECT_CONFIG_STORAGE_TOPIC: "ksql-connect-configs"
+      KSQL_CONNECT_OFFSET_STORAGE_TOPIC: "ksql-connect-offsets"
+      KSQL_CONNECT_STATUS_STORAGE_TOPIC: "ksql-connect-statuses"
+      KSQL_CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      KSQL_CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      KSQL_CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      KSQL_CONNECT_PLUGIN_PATH: "/usr/share/kafka/plugins"
+
+  ksqldb-cli:
+    image: confluentinc/ksqldb-cli:0.10.1
+    container_name: ksqldb-cli
+    depends_on:
+      - broker
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
 
   ksql-python:
     build:
       context: .
     network_mode: host
     depends_on:
-      - ksql-server
-      - kafka
+      - ksqldb-server
+      - broker
       - schema-registry
     environment:
       KSQL_SERVER: localhost:8088

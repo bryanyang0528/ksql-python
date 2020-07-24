@@ -69,6 +69,7 @@ class BaseAPI(object):
         """
         streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
         start_idle = None
+
         if streaming_response.code == 200:
             for chunk in streaming_response:
                 if chunk != b'\n':
