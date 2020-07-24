@@ -1,9 +1,11 @@
+import time
+
+import base64
 import functools
 import json
-import time
 import logging
-
 import requests
+import urllib
 from requests import Timeout
 
 from ksql.builder import SQLBuilder
@@ -32,17 +34,14 @@ class BaseAPI(object):
         return sql_string
 
     @staticmethod
-    def _raise_for_status(r):
-        try:
-            r_json = r.json()
-        except ValueError:
-            r.raise_for_status()
-        if r.status_code != 200:
+    def _raise_for_status(r, response):
+        r_json = json.loads(response)
+        if r.getcode() != 200:
             # seems to be the new API behavior
             if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
                 error_message = r_json['message']
                 error_code = r_json['error_code']
-                stackTrace = r_json['stackTrace']
+                stackTrace = r_json['stack_trace']
                 raise KSQLError(error_message, error_code, stackTrace)
             else:
                 raise KSQLError("Unknown Error: {}".format(r.content))
@@ -58,9 +57,10 @@ class BaseAPI(object):
 
     def ksql(self, ksql_string, stream_properties=None):
         r = self._request(endpoint='ksql', sql_string=ksql_string, stream_properties=stream_properties)
-        self._raise_for_status(r)
-        r = r.json()
-        return r
+        response = r.read().decode('utf-8')
+        self._raise_for_status(r, response)
+        res = json.loads(response)
+        return res
 
     def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
         """
@@ -69,8 +69,9 @@ class BaseAPI(object):
         """
         streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
         start_idle = None
-        if streaming_response.status_code == 200:
-            for chunk in streaming_response.iter_content(chunk_size=chunk_size):
+
+        if streaming_response.code == 200:
+            for chunk in streaming_response:
                 if chunk != b'\n':
                     start_idle = None
                     yield chunk.decode(encoding)
@@ -86,7 +87,7 @@ class BaseAPI(object):
     def get_request(self, endpoint):
         return requests.get(endpoint, auth=(self.api_key, self.secret))
 
-    def _request(self, endpoint, sql_string, method='post', stream_properties=None):
+    def _request(self, endpoint, method='POST', sql_string='', stream_properties=None, encoding='utf-8'):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
@@ -97,28 +98,36 @@ class BaseAPI(object):
         }
         if stream_properties:
             body['streamsProperties'] = stream_properties
-        data = json.dumps(body)
+        data = json.dumps(body).encode(encoding)
 
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
+        if self.api_key and self.secret:
+            base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
+            headers["Authorization"] = "Basic {}" % base64string
 
-        if endpoint == 'query':
-            stream = True
-        else:
-            stream = False
-
-        r = requests.request(
-            method=method,
+        req = urllib.request.Request(
             url=url,
             data=data,
-            timeout=self.timeout,
             headers=headers,
-            stream=stream,
-            auth=(self.api_key, self.secret))
+            method=method.upper()
+        )
 
-        return r
+        try:
+            r = urllib.request.urlopen(req, timeout=self.timeout)
+        except urllib.error.HTTPError as e:
+            try:
+                content = json.loads(e.read().decode(encoding) )
+            except Exception as e:
+                raise ValueError(e)
+            else:
+                logging.debug("content: {}".format(content))
+                raise KSQLError(e=content.get('message'),
+                                error_code=content.get('error_code'))
+        else:
+            return r
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
