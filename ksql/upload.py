@@ -8,7 +8,7 @@ class FileUpload(object):
     """ UPLOAD KSQL RULES AS FILES """
 
     def __init__(self, url, **kwargs):
-        ''' Instantiate the url pointer and the client object '''
+        """ Instantiate the url pointer and the client object """
         self.url = url
         self.client = KSQLAPI(url)
 
@@ -42,16 +42,16 @@ class FileUpload(object):
             for line in rf:
                 rule = rule + " " + line.strip()
 
-                if rule[-1:] == ';':
+                if rule[-1:] == ";":
                     yield rule
                     rule = ""
 
-            if rule[-1:] != ';':
+            if rule[-1:] != ";":
                 raise InvalidQueryError(rule)
 
     def checkExtension(self, filename):
         ext = os.path.splitext(filename)[-1].lower()
 
-        if ext != '.ksql':
+        if ext != ".ksql":
             raise FileTypeError(ext)
         return
