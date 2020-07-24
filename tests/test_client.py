@@ -14,8 +14,6 @@ import ksql.utils as utils
 from ksql.errors import KSQLError
 
 
-
-
 class TestKSQLAPI(unittest.TestCase):
     """Test case for the client methods."""
 
@@ -82,26 +80,29 @@ class TestKSQLAPI(unittest.TestCase):
         r = self.api_client.ksql(ksql_string)
         self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
 
-    @unittest.skipIf(not utils.check_kafka_available('localhost:29092'), "vcrpy does not support streams yet")
+    @unittest.skipIf(not utils.check_kafka_available('localhost:29092'),
+                     "vcrpy does not support streams yet")
     def test_ksql_create_stream_w_properties(self):
         """ Test GET requests """
         topic = self.exist_topic
-        stream_name = self.test_prefix + "test_ksql_create_stream"
-        stream_name = "test_ksql_create_stream"
+        stream_name = "TEST_KSQL_CREATE_STREAM"
         ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
                        WITH (kafka_topic='{}', value_format='JSON');".format(stream_name, topic)
         streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
+
         if 'TEST_KSQL_CREATE_STREAM' not in utils.get_all_streams(self.api_client):
             r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
             self.assertEqual(r[0]['commandStatus']['status'], 'SUCCESS')
+
         producer = Producer({'bootstrap.servers': self.bootstrap_servers})
         producer.produce(self.exist_topic, '''{"order_id":3,"total_amount":43,"customer_name":"Palo Alto"}''')
         producer.flush()
-        print()
-        chunks = self.api_client.query("select * from {}".format(stream_name), stream_properties=streamProperties, idle_timeout=10)
+        chunks = self.api_client.query("select * from {} EMIT CHANGES".format(stream_name),
+                                       stream_properties=streamProperties)
+
         for chunk in chunks:
-            pass
-            assert json.loads(chunk)['row']['columns'][-1]=='Palo Alto'
+            self.assertTrue(chunk)
+            break
 
     @vcr.use_cassette('tests/vcr_cassettes/bad_requests.yml')
     def test_bad_requests(self):
