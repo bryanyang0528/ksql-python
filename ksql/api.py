@@ -4,8 +4,8 @@ import time
 import logging
 
 import urllib
-from urllib.request import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, build_opener
-from socket import timeout
+import requests
+from requests import Timeout
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
@@ -39,7 +39,7 @@ class BaseAPI(object):
             if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
                 error_message = r_json['message']
                 error_code = r_json['error_code']
-                stackTrace = r_json['stackTrace']
+                stackTrace = r_json['stack_trace']
                 raise KSQLError(error_message, error_code, stackTrace)
             else:
                 raise KSQLError("Unknown Error: {}".format(r.content))
@@ -67,21 +67,24 @@ class BaseAPI(object):
         """
         streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
         start_idle = None
-        for chunk in streaming_response:
-            if chunk != b'\n':
-                start_idle = None
-                yield chunk.decode(encoding)
-            else:
-                if not start_idle:
-                    start_idle = time.time()
-                if idle_timeout and time.time() - start_idle > idle_timeout:
-                    print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
-                    return
+        if streaming_response.code == 200:
+            for chunk in streaming_response:
+                if chunk != b'\n':
+                    start_idle = None
+                    yield chunk.decode(encoding)
+                else:
+                    if not start_idle:
+                        start_idle = time.time()
+                    if idle_timeout and time.time() - start_idle > idle_timeout:
+                        print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
+                        return
+        else:
+            raise ValueError('Return code is {}.'.format(streaming_response.status_code))
 
     def get_request(self, endpoint):
         return requests.get(endpoint, auth=(self.api_key, self.secret))
-           
-    def _request(self, endpoint, method='post', sql_string='', stream_properties=None, encoding='utf-8'):
+
+    def _request(self, endpoint, method='POST', sql_string='', stream_properties=None, encoding='utf-8'):
         url = '{}/{}'.format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
@@ -98,22 +101,22 @@ class BaseAPI(object):
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
-        
-        if self.api_key and self.secret:
-            base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
-            headers["Authorization"] = "Basic {}" % base64string 
-        
-        method = method.upper()
 
         req = urllib.request.Request(
             url=url,
             data=data,
             headers=headers,
-            method=method
-        )
-        
-        r = urllib.request.urlopen(req, timeout=self.timeout)
-        return r
+            method=method)
+
+        try:
+            r = urllib.request.urlopen(req, timeout=self.timeout)
+        except urllib.error.HTTPError as e:
+            content = json.loads(e.read())
+            logging.debug("content: {}".format(content))
+            raise KSQLError(e=content.get('message'),
+                            error_code=content.get('error_code'))
+        else:
+            return r
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
@@ -216,7 +219,7 @@ class SimplifiedAPI(BaseAPI):
         r = self.ksql(ksql_string)
         return True
 
-    @BaseAPI.retry(exceptions=(timeout, CreateError))
+    @BaseAPI.retry(exceptions=(Timeout, CreateError))
     def _create_as(
             self,
             table_type,
