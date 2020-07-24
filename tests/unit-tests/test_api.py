@@ -13,5 +13,6 @@ class TestBaseApi(unittest.TestCase):
                       stream=True)
         base = BaseAPI("http://dummy.org")
         result = base.query("so")
-        for entry in result:
-            self.assertEqual(entry, "test")
+        with self.assertRaises(ValueError):
+            for entry in result:
+                entry

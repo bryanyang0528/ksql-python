@@ -111,10 +111,14 @@ class BaseAPI(object):
         try:
             r = urllib.request.urlopen(req, timeout=self.timeout)
         except urllib.error.HTTPError as e:
-            content = json.loads(e.read())
-            logging.debug("content: {}".format(content))
-            raise KSQLError(e=content.get('message'),
-                            error_code=content.get('error_code'))
+            try:
+                content = json.loads(e.read())
+            except Exception as e:
+                raise ValueError(e)
+            else:
+                logging.debug("content: {}".format(content))
+                raise KSQLError(e=content.get('message'),
+                                error_code=content.get('error_code'))
         else:
             return r
 
