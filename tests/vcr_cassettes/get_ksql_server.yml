@@ -2,17 +2,27 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.19.1]
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Basic Tm9uZTpOb25l
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.18.4
     method: GET
     uri: http://localhost:8088/info
   response:
-    body: {string: '{"KsqlServerInfo":{"version":"5.0.0-SNAPSHOT","kafkaClusterId":"9HvFRIoMSyy1YUxjpOt-gg","ksqlServiceId":"default_"}}'}
+    body:
+      string: '{"KsqlServerInfo":{"version":"0.10.1","kafkaClusterId":"DkvN9zaxSjO5NxYIkhjKCQ","ksqlServiceId":"default_"}}'
     headers:
-      Content-Type: [application/vnd.ksql.v1+json]
-      Date: ['Fri, 20 Jul 2018 20:08:04 GMT']
-      Server: [Jetty(9.4.10.v20180503)]
-    status: {code: 200, message: OK}
+      content-length:
+      - '108'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
 version: 1

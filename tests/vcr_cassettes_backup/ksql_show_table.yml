@@ -1,0 +1,20 @@
+interactions:
+- request:
+    body: '{"ksql": "show tables;"}'
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['24']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.19.1]
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body: {string: '[{"@type":"tables","statementText":"show tables;","tables":[]}]'}
+    headers:
+      Content-Type: [application/json]
+      Date: ['Fri, 20 Jul 2018 20:10:11 GMT']
+      Server: [Jetty(9.4.10.v20180503)]
+    status: {code: 200, message: OK}
+version: 1
