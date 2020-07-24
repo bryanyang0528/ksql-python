@@ -118,7 +118,7 @@ class CreateAsBuilder(BaseCreateBuilder):
         value_format="JSON",
         conditions=[],
         partition_by=None,
-        **kwargs,
+        **kwargs
     ):
 
         if value_format.lower() not in self.value_formats:
