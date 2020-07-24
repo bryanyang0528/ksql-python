@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """ Setup module """
 import os
-import re
 
 from setuptools import setup
 from distutils.version import LooseVersion
@@ -22,7 +21,7 @@ def get_install_requirements(path):
     ]
 
 # Get version from __init__.py file
-VERSION = "0.5.1.1"
+VERSION = "0.10.1.0"
 
 here = os.path.dirname(__file__)
 
@@ -64,11 +63,9 @@ setup(
         "Natural Language :: English",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     **setuptools_kwargs
