@@ -2,19 +2,45 @@ interactions:
 - request:
     body: '{"ksql": "show properties;"}'
     headers:
-      Accept: [application/json]
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      Content-Length: ['28']
-      Content-Type: [application/json]
-      User-Agent: [python-requests/2.19.1]
+      Accept:
+      - application/json
+      Connection:
+      - close
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Host:
+      - localhost:8088
+      User-Agent:
+      - Python-urllib/3.6
     method: POST
     uri: http://localhost:8088/ksql
   response:
-    body: {string: '[{"@type":"properties","statementText":"show properties;","properties":{"ksql.extension.dir":"ext","ksql.streams.cache.max.bytes.buffering":"10000000","ksql.transient.prefix":"transient_","ksql.schema.registry.url":"http://localhost:8081","ssl.secure.random.implementation":null,"ksql.streams.default.deserialization.exception.handler":"io.confluent.ksql.errors.LogMetricAndContinueExceptionHandler","ksql.output.topic.name.prefix":"","ksql.streams.auto.offset.reset":"latest","ksql.sink.partitions":"4","ssl.keystore.type":"JKS","ssl.trustmanager.algorithm":"PKIX","ksql.statestore.suffix":"_ksql_statestore","ssl.key.password":null,"ksql.service.id":"default_","ssl.truststore.password":null,"ssl.endpoint.identification.algorithm":"https","ksql.streams.bootstrap.servers":"localhost:29092","ssl.protocol":"TLS","ksql.streams.commit.interval.ms":"2000","ksql.sink.replicas":"1","ssl.provider":null,"ssl.enabled.protocols":"TLSv1.2,TLSv1.1,TLSv1","ssl.keystore.location":null,"ksql.streams.num.stream.threads":"4","ssl.cipher.suites":null,"ssl.truststore.type":"JKS","ksql.udfs.enabled":"true","ssl.truststore.location":null,"ksql.udf.enable.security.manager":"true","ssl.keystore.password":null,"ssl.keymanager.algorithm":"SunX509","ksql.streams.application.id":"KSQL_REST_SERVER_DEFAULT_APP_ID","ksql.sink.window.change.log.additional.retention":"1000000","ksql.udf.collect.metrics":"false","ksql.persistent.prefix":"query_"},"overwrittenProperties":[]}]'}
+    body:
+      string: '[{"@type":"properties","statementText":"show properties;","properties":[{"name":"ksql.extension.dir","scope":"KSQL","value":"ext"},{"name":"ksql.streams.cache.max.bytes.buffering","scope":"KSQL","value":"10000000"},{"name":"ksql.security.extension.class","scope":"KSQL","value":null},{"name":"ksql.transient.prefix","scope":"KSQL","value":"transient_"},{"name":"ksql.persistence.wrap.single.values","scope":"KSQL","value":"true"},{"name":"ksql.authorization.cache.expiry.time.secs","scope":"KSQL","value":"30"},{"name":"ksql.schema.registry.url","scope":"KSQL","value":"http://schema-registry:8081"},{"name":"ksql.streams.default.deserialization.exception.handler","scope":"KSQL","value":"io.confluent.ksql.errors.LogMetricAndContinueExceptionHandler"},{"name":"ksql.output.topic.name.prefix","scope":"KSQL","value":""},{"name":"ksql.query.pull.enable.standby.reads","scope":"KSQL","value":"false"},{"name":"ksql.connect.url","scope":"KSQL","value":"http://localhost:8083"},{"name":"ksql.service.id","scope":"KSQL","value":"default_"},{"name":"ksql.internal.topic.min.insync.replicas","scope":"KSQL","value":"1"},{"name":"ksql.streams.shutdown.timeout.ms","scope":"KSQL","value":"300000"},{"name":"ksql.internal.topic.replicas","scope":"KSQL","value":"1"},{"name":"ksql.insert.into.values.enabled","scope":"KSQL","value":"true"},{"name":"ksql.query.pull.max.allowed.offset.lag","scope":"KSQL","value":"9223372036854775807"},{"name":"ksql.query.pull.max.qps","scope":"KSQL","value":"2147483647"},{"name":"ksql.streams.default.production.exception.handler","scope":"KSQL","value":"io.confluent.ksql.errors.ProductionExceptionHandlerUtil$LogAndFailProductionExceptionHandler"},{"name":"ksql.access.validator.enable","scope":"KSQL","value":"auto"},{"name":"ksql.streams.bootstrap.servers","scope":"KSQL","value":"broker:9092"},{"name":"ksql.streams.commit.interval.ms","scope":"KSQL","value":"2000"},{"name":"ksql.metric.reporters","scope":"KSQL","value":""},{"name":"ksql.query.pull.metrics.enabled","scope":"KSQL","value":"false"},{"name":"ksql.metrics.extension","scope":"KSQL","value":null},{"name":"ksql.streams.topology.optimization","scope":"KSQL","value":"all"},{"name":"ksql.hidden.topics","scope":"KSQL","value":"_confluent.*,__confluent.*,_schemas,__consumer_offsets,__transaction_state,connect-configs,connect-offsets,connect-status,connect-statuses"},{"name":"ksql.streams.num.stream.threads","scope":"KSQL","value":"4"},{"name":"ksql.timestamp.throw.on.invalid","scope":"KSQL","value":"false"},{"name":"ksql.authorization.cache.max.entries","scope":"KSQL","value":"10000"},{"name":"ksql.metrics.tags.custom","scope":"KSQL","value":""},{"name":"ksql.pull.queries.enable","scope":"KSQL","value":"true"},{"name":"ksql.udfs.enabled","scope":"KSQL","value":"true"},{"name":"ksql.udf.enable.security.manager","scope":"KSQL","value":"true"},{"name":"ksql.connect.worker.config","scope":"KSQL","value":"/etc/ksqldb/connect.properties"},{"name":"ksql.streams.application.server","scope":"KSQL","value":"http://ksqldb-server:8088"},{"name":"ksql.sink.window.change.log.additional.retention","scope":"KSQL","value":"1000000"},{"name":"ksql.readonly.topics","scope":"KSQL","value":"_confluent.*,__confluent.*,_schemas,__consumer_offsets,__transaction_state,connect-configs,connect-offsets,connect-status,connect-statuses"},{"name":"ksql.udf.collect.metrics","scope":"KSQL","value":"false"},{"name":"ksql.persistent.prefix","scope":"KSQL","value":"query_"},{"name":"ksql.query.persistent.active.limit","scope":"KSQL","value":"2147483647"},{"name":"ksql.error.classifier.regex","scope":"KSQL","value":""},{"name":"config.storage.topic","scope":"EMBEDDED
+        CONNECT WORKER","value":"ksql-connect-configs"},{"name":"status.storage.topic","scope":"EMBEDDED
+        CONNECT WORKER","value":"ksql-connect-statuses"},{"name":"group.id","scope":"EMBEDDED
+        CONNECT WORKER","value":"ksql-connect-cluster"},{"name":"bootstrap.servers","scope":"EMBEDDED
+        CONNECT WORKER","value":"broker:9092"},{"name":"plugin.path","scope":"EMBEDDED
+        CONNECT WORKER","value":"/usr/share/kafka/plugins"},{"name":"config.storage.replication.factor","scope":"EMBEDDED
+        CONNECT WORKER","value":"1"},{"name":"value.converter.schema.registry.url","scope":"EMBEDDED
+        CONNECT WORKER","value":"http://schema-registry:8081"},{"name":"status.storage.replication.factor","scope":"EMBEDDED
+        CONNECT WORKER","value":"1"},{"name":"value.converter.schemas.enable","scope":"EMBEDDED
+        CONNECT WORKER","value":"false"},{"name":"offset.storage.replication.factor","scope":"EMBEDDED
+        CONNECT WORKER","value":"1"},{"name":"offset.storage.topic","scope":"EMBEDDED
+        CONNECT WORKER","value":"ksql-connect-offsets"},{"name":"value.converter","scope":"EMBEDDED
+        CONNECT WORKER","value":"io.confluent.connect.avro.AvroConverter"},{"name":"key.converter","scope":"EMBEDDED
+        CONNECT WORKER","value":"io.confluent.connect.avro.AvroConverter"},{"name":"key.converter.schema.registry.url","scope":"EMBEDDED
+        CONNECT WORKER","value":"http://schema-registry:8081"}],"overwrittenProperties":["config.storage.topic","status.storage.topic","group.id","bootstrap.servers","plugin.path","config.storage.replication.factor","value.converter.schema.registry.url","status.storage.replication.factor","value.converter.schemas.enable","offset.storage.replication.factor","offset.storage.topic","value.converter","key.converter","key.converter.schema.registry.url"],"defaultProperties":["ksql.extension.dir","ksql.security.extension.class","ksql.transient.prefix","ksql.persistence.wrap.single.values","ksql.authorization.cache.expiry.time.secs","ksql.output.topic.name.prefix","ksql.query.pull.enable.standby.reads","ksql.connect.url","ksql.service.id","ksql.internal.topic.min.insync.replicas","ksql.internal.topic.replicas","ksql.insert.into.values.enabled","ksql.query.pull.max.allowed.offset.lag","ksql.query.pull.max.qps","ksql.access.validator.enable","ksql.metric.reporters","ksql.query.pull.metrics.enabled","ksql.metrics.extension","ksql.hidden.topics","ksql.timestamp.throw.on.invalid","ksql.authorization.cache.max.entries","ksql.metrics.tags.custom","ksql.pull.queries.enable","ksql.udfs.enabled","ksql.udf.enable.security.manager","ksql.sink.window.change.log.additional.retention","ksql.readonly.topics","ksql.udf.collect.metrics","ksql.persistent.prefix","ksql.query.persistent.active.limit","ksql.error.classifier.regex"],"warnings":[]}]'
     headers:
-      Content-Type: [application/json]
-      Date: ['Fri, 20 Jul 2018 20:08:06 GMT']
-      Server: [Jetty(9.4.10.v20180503)]
-    status: {code: 200, message: OK}
+      connection:
+      - close
+      content-length:
+      - '6354'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
 version: 1
