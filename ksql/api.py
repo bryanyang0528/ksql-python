@@ -1,11 +1,13 @@
+import time
+
+import base64
 import functools
 import json
-import time
 import logging
-
+import requests
 import urllib
-from urllib.request import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, build_opener
-from socket import timeout
+from requests import Timeout
+
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, KSQLError, InvalidQueryError
 
@@ -25,8 +27,8 @@ class BaseAPI(object):
     @staticmethod
     def _validate_sql_string(sql_string):
         if len(sql_string) > 0:
-            if sql_string[-1] != ';':
-                sql_string = sql_string + ';'
+            if sql_string[-1] != ";":
+                sql_string = sql_string + ";"
         else:
             raise InvalidQueryError(sql_string)
         return sql_string
@@ -36,84 +38,86 @@ class BaseAPI(object):
         r_json = json.loads(response)
         if r.getcode() != 200:
             # seems to be the new API behavior
-            if r_json.get('@type') == 'statement_error' or r_json.get('@type') == 'generic_error':
-                error_message = r_json['message']
-                error_code = r_json['error_code']
-                stackTrace = r_json['stackTrace']
+            if r_json.get("@type") == "statement_error" or r_json.get("@type") == "generic_error":
+                error_message = r_json["message"]
+                error_code = r_json["error_code"]
+                stackTrace = r_json["stack_trace"]
                 raise KSQLError(error_message, error_code, stackTrace)
             else:
                 raise KSQLError("Unknown Error: {}".format(r.content))
         else:
             # seems to be the old API behavior, so some errors have status 200, bug??
-            if r_json[0]['@type'] == 'currentStatus' \
-                    and r_json[0]['commandStatus']['status'] == 'ERROR':
-                error_message = r_json[0]['commandStatus']['message']
+            if r_json[0]["@type"] == "currentStatus" and r_json[0]["commandStatus"]["status"] == "ERROR":
+                error_message = r_json[0]["commandStatus"]["message"]
                 error_code = None
                 stackTrace = None
                 raise KSQLError(error_message, error_code, stackTrace)
             return True
 
     def ksql(self, ksql_string, stream_properties=None):
-        r = self._request(endpoint='ksql', sql_string=ksql_string, stream_properties=stream_properties)
-        response = r.read().decode('utf-8')
+        r = self._request(endpoint="ksql", sql_string=ksql_string, stream_properties=stream_properties)
+        response = r.read().decode("utf-8")
         self._raise_for_status(r, response)
         res = json.loads(response)
         return res
 
-    def query(self, query_string, encoding='utf-8', chunk_size=128, stream_properties=None, idle_timeout=None):
+    def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
         """
         Process streaming incoming data.
 
         """
-        streaming_response = self._request(endpoint='query', sql_string=query_string, stream_properties=stream_properties)
+        streaming_response = self._request(
+            endpoint="query", sql_string=query_string, stream_properties=stream_properties
+        )
         start_idle = None
-        for chunk in streaming_response:
-            if chunk != b'\n':
-                start_idle = None
-                yield chunk.decode(encoding)
-            else:
-                if not start_idle:
-                    start_idle = time.time()
-                if idle_timeout and time.time() - start_idle > idle_timeout:
-                    print('Ending query because of time out! ({} seconds)'.format(idle_timeout))
-                    return
+
+        if streaming_response.code == 200:
+            for chunk in streaming_response:
+                if chunk != b"\n":
+                    start_idle = None
+                    yield chunk.decode(encoding)
+                else:
+                    if not start_idle:
+                        start_idle = time.time()
+                    if idle_timeout and time.time() - start_idle > idle_timeout:
+                        print("Ending query because of time out! ({} seconds)".format(idle_timeout))
+                        return
+        else:
+            raise ValueError("Return code is {}.".format(streaming_response.status_code))
 
     def get_request(self, endpoint):
         return requests.get(endpoint, auth=(self.api_key, self.secret))
-           
-    def _request(self, endpoint, method='post', sql_string='', stream_properties=None, encoding='utf-8'):
-        url = '{}/{}'.format(self.url, endpoint)
+
+    def _request(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
+        url = "{}/{}".format(self.url, endpoint)
 
         logging.debug("KSQL generated: {}".format(sql_string))
 
         sql_string = self._validate_sql_string(sql_string)
-        body = {
-            "ksql": sql_string
-        }
+        body = {"ksql": sql_string}
         if stream_properties:
-            body['streamsProperties'] = stream_properties
+            body["streamsProperties"] = stream_properties
         data = json.dumps(body).encode(encoding)
 
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
-        
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if self.api_key and self.secret:
-            base64string = base64.b64encode('{}:{}' % (self.api_key, self.secret))
-            headers["Authorization"] = "Basic {}" % base64string 
-        
-        method = method.upper()
+            base64string = base64.b64encode("{}:{}".format(self.api_key, self.secret))
+            headers["Authorization"] = "Basic {}" % base64string
 
-        req = urllib.request.Request(
-            url=url,
-            data=data,
-            headers=headers,
-            method=method
-        )
-        
-        r = urllib.request.urlopen(req, timeout=self.timeout)
-        return r
+        req = urllib.request.Request(url=url, data=data, headers=headers, method=method.upper())
+
+        try:
+            r = urllib.request.urlopen(req, timeout=self.timeout)
+        except urllib.error.HTTPError as e:
+            try:
+                content = json.loads(e.read().decode(encoding))
+            except Exception as e:
+                raise ValueError(e)
+            else:
+                logging.debug("content: {}".format(content))
+                raise KSQLError(e=content.get("message"), error_code=content.get("error_code"))
+        else:
+            return r
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
@@ -156,87 +160,87 @@ class SimplifiedAPI(BaseAPI):
     def __init__(self, url, **kwargs):
         super(SimplifiedAPI, self).__init__(url, **kwargs)
 
-    def create_stream(
-            self,
-            table_name,
-            columns_type,
-            topic,
-            value_format='JSON'):
-        return self._create(table_type='stream',
-                            table_name=table_name,
-                            columns_type=columns_type,
-                            topic=topic,
-                            value_format=value_format)
+    def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
+        return self._create(
+            table_type="stream",
+            table_name=table_name,
+            columns_type=columns_type,
+            topic=topic,
+            value_format=value_format,
+        )
 
     def create_table(self, table_name, columns_type, topic, value_format, key):
         if not key:
-            raise ValueError('key is required for creating a table.')
-        return self._create(table_type='table',
-                            table_name=table_name,
-                            columns_type=columns_type,
-                            topic=topic,
-                            value_format=value_format,
-                            key=key)
+            raise ValueError("key is required for creating a table.")
+        return self._create(
+            table_type="table",
+            table_name=table_name,
+            columns_type=columns_type,
+            topic=topic,
+            value_format=value_format,
+            key=key,
+        )
 
     def create_stream_as(
-            self,
-            table_name,
-            select_columns,
-            src_table,
-            kafka_topic=None,
-            value_format='JSON',
-            conditions=[],
-            partition_by=None,
-            **kwargs):
-        return self._create_as(table_type='stream',
-                               table_name=table_name,
-                               select_columns=select_columns,
-                               src_table=src_table,
-                               kafka_topic=kafka_topic,
-                               value_format=value_format,
-                               conditions=conditions,
-                               partition_by=partition_by,
-                               **kwargs)
+        self,
+        table_name,
+        select_columns,
+        src_table,
+        kafka_topic=None,
+        value_format="JSON",
+        conditions=[],
+        partition_by=None,
+        **kwargs,
+    ):
+        return self._create_as(
+            table_type="stream",
+            table_name=table_name,
+            select_columns=select_columns,
+            src_table=src_table,
+            kafka_topic=kafka_topic,
+            value_format=value_format,
+            conditions=conditions,
+            partition_by=partition_by,
+            **kwargs,
+        )
 
-    def _create(
-            self,
-            table_type,
-            table_name,
-            columns_type,
-            topic,
-            value_format='JSON',
-            key=None):
-        ksql_string = SQLBuilder.build(sql_type='create',
-                                       table_type=table_type,
-                                       table_name=table_name,
-                                       columns_type=columns_type,
-                                       topic=topic,
-                                       value_format=value_format,
-                                       key=key)
-        r = self.ksql(ksql_string)
+    def _create(self, table_type, table_name, columns_type, topic, value_format="JSON", key=None):
+        ksql_string = SQLBuilder.build(
+            sql_type="create",
+            table_type=table_type,
+            table_name=table_name,
+            columns_type=columns_type,
+            topic=topic,
+            value_format=value_format,
+            key=key,
+        )
+        self.ksql(ksql_string)
         return True
 
-    @BaseAPI.retry(exceptions=(timeout, CreateError))
+    @BaseAPI.retry(exceptions=(Timeout, CreateError))
     def _create_as(
-            self,
-            table_type,
-            table_name,
-            select_columns,
-            src_table,
-            kafka_topic=None,
-            value_format='JSON',
-            conditions=[],
-            partition_by=None,
-            **kwargs):
-        ksql_string = SQLBuilder.build(sql_type='create_as',
-                                       table_type=table_type,
-                                       table_name=table_name,
-                                       select_columns=select_columns,
-                                       src_table=src_table,
-                                       kafka_topic=kafka_topic,
-                                       value_format=value_format,
-                                       conditions=conditions,
-                                       partition_by=partition_by,
-                                       **kwargs)
-        r = self.ksql(ksql_string)
+        self,
+        table_type,
+        table_name,
+        select_columns,
+        src_table,
+        kafka_topic=None,
+        value_format="JSON",
+        conditions=[],
+        partition_by=None,
+        **kwargs,
+    ):
+        ksql_string = SQLBuilder.build(
+            sql_type="create_as",
+            table_type=table_type,
+            table_name=table_name,
+            select_columns=select_columns,
+            src_table=src_table,
+            kafka_topic=kafka_topic,
+            value_format=value_format,
+            conditions=conditions,
+            partition_by=partition_by,
+            **kwargs,
+        )
+        self.ksql(ksql_string)
         return True
