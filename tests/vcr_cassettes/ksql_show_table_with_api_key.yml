@@ -1,0 +1,34 @@
+interactions:
+- request:
+    body: '{"ksql": "show tables;"}'
+    headers:
+      Accept:
+      - application/json
+      Authorization:
+      - Basic {}
+      Connection:
+      - close
+      Content-Length:
+      - '24'
+      Content-Type:
+      - application/json
+      Host:
+      - localhost:8088
+      User-Agent:
+      - Python-urllib/3.8
+    method: POST
+    uri: http://localhost:8088/ksql
+  response:
+    body:
+      string: '[{"@type":"tables","statementText":"show tables;","tables":[],"warnings":[]}]'
+    headers:
+      connection:
+      - close
+      content-length:
+      - '77'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1
