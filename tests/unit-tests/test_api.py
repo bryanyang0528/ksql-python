@@ -1,5 +1,6 @@
 import unittest
 import responses
+import urllib
 
 from ksql.api import BaseAPI
 
