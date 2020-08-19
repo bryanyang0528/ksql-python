@@ -99,7 +99,7 @@ class BaseAPI(object):
             body["streamsProperties"] = stream_properties
         data = json.dumps(body).encode(encoding)
 
-        headers = {"Accept": "application/json", "Content-Type": "application/json"}
+        headers = {"Accept": "application/vnd.ksql.v1+json", "Content-Type": "application/json"}
         if self.api_key and self.secret:
             base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8"))
             headers["Authorization"] = "Basic {}" % base64string
@@ -108,11 +108,11 @@ class BaseAPI(object):
 
         try:
             r = urllib.request.urlopen(req, timeout=self.timeout)
-        except urllib.error.HTTPError as e:
+        except urllib.error.HTTPError as http_error:
             try:
-                content = json.loads(e.read().decode(encoding))
-            except Exception as e:
-                raise ValueError(e)
+                content = json.loads(http_error.read().decode(encoding))
+            except Exception as json_error:
+                raise http_error
             else:
                 logging.debug("content: {}".format(content))
                 raise KSQLError(e=content.get("message"), error_code=content.get("error_code"))
