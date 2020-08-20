@@ -6,10 +6,11 @@ import json
 import logging
 import requests
 import urllib
+from copy import deepcopy
 from requests import Timeout
 
 from ksql.builder import SQLBuilder
-from ksql.errors import CreateError, KSQLError, InvalidQueryError
+from ksql.errors import CreateError, InvalidQueryError, KSQLError
 
 
 class BaseAPI(object):
@@ -20,6 +21,9 @@ class BaseAPI(object):
         self.timeout = kwargs.get("timeout", 15)
         self.api_key = kwargs.get("api_key")
         self.secret = kwargs.get("secret")
+        self.headers = {
+            'Content-Type': 'application/vnd.ksql.v1+json; charset=utf-8',
+        }
 
     def get_timout(self):
         return self.timeout
@@ -86,7 +90,8 @@ class BaseAPI(object):
             raise ValueError("Return code is {}.".format(streaming_response.status_code))
 
     def get_request(self, endpoint):
-        return requests.get(endpoint, auth=(self.api_key, self.secret))
+        auth = (self.api_key, self.secret) if self.api_key or self.secret else None
+        return requests.get(endpoint, headers=self.headers, auth=auth)
 
     def _request(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
@@ -97,22 +102,24 @@ class BaseAPI(object):
         body = {"ksql": sql_string}
         if stream_properties:
             body["streamsProperties"] = stream_properties
+        else:
+            body["streamsProperties"] = {}
         data = json.dumps(body).encode(encoding)
 
-        headers = {"Accept": "application/json", "Content-Type": "application/json"}
+        headers = deepcopy(self.headers)
         if self.api_key and self.secret:
-            base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8"))
-            headers["Authorization"] = "Basic {}" % base64string
+            base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8")).decode("utf-8")
+            headers["Authorization"] = "Basic %s" % base64string
 
         req = urllib.request.Request(url=url, data=data, headers=headers, method=method.upper())
 
         try:
             r = urllib.request.urlopen(req, timeout=self.timeout)
-        except urllib.error.HTTPError as e:
+        except urllib.error.HTTPError as http_error:
             try:
-                content = json.loads(e.read().decode(encoding))
+                content = json.loads(http_error.read().decode(encoding))
             except Exception as e:
-                raise ValueError(e)
+                raise http_error
             else:
                 logging.debug("content: {}".format(content))
                 raise KSQLError(e=content.get("message"), error_code=content.get("error_code"))
