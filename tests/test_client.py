@@ -53,6 +53,13 @@ class TestKSQLAPI(unittest.TestCase):
         property = [i for i in properties if i["name"] == "ksql.schema.registry.url"][0]
         self.assertEqual(property.get("value"), "http://schema-registry:8081")
 
+    @vcr.use_cassette("tests/vcr_cassettes/ksql_show_table_with_api_key.yml")
+    def test_ksql_show_tables_with_api_key(self):
+        api_client = KSQLAPI(url=self.url, check_version=False, api_key='foo', secret='bar')
+        ksql_string = "show tables;"
+        r = api_client.ksql(ksql_string)
+        self.assertEqual(r, [{"@type": "tables", "statementText": "show tables;", "tables": [], "warnings": []}])
+
     @vcr.use_cassette("tests/vcr_cassettes/ksql_show_table.yml")
     def test_ksql_show_tables(self):
         """ Test GET requests """

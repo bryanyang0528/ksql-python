@@ -102,7 +102,7 @@ class BaseAPI(object):
 
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if self.api_key and self.secret:
-            base64string = base64.b64encode("{}:{}".format(self.api_key, self.secret))
+            base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8"))
             headers["Authorization"] = "Basic {}" % base64string
 
         req = urllib.request.Request(url=url, data=data, headers=headers, method=method.upper())
