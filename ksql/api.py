@@ -86,7 +86,8 @@ class BaseAPI(object):
             raise ValueError("Return code is {}.".format(streaming_response.status_code))
 
     def get_request(self, endpoint):
-        return requests.get(endpoint, auth=(self.api_key, self.secret))
+        auth = (self.api_key, self.secret) if self.api_key or self.secret else None
+        return requests.get(endpoint, auth=auth)
 
     def _request(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)

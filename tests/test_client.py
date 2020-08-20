@@ -33,7 +33,7 @@ class TestKSQLAPI(unittest.TestCase):
 
     def test_with_timeout(self):
         api_client = KSQLAPI(url=self.url, timeout=10, check_version=False)
-        self.assertEquals(api_client.timeout, 10)
+        self.assertEqual(api_client.timeout, 10)
 
     @vcr.use_cassette("tests/vcr_cassettes/healthcheck.yml")
     def test_ksql_server_healthcheck(self):
