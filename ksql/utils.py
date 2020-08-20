@@ -1,5 +1,7 @@
 import ksql
 import telnetlib
+import json
+import re
 
 
 def check_kafka_available(bootstrap_servers):
@@ -65,3 +67,28 @@ def get_dependent_queries(api_client, stream_name):
         write_queries = [query["id"] for query in stream_info["writeQueries"]]
 
     return read_queries, write_queries
+
+
+def parse_columns(columns_str):
+    regex = r"`(?P<name>[A-Z_]+)` (?P<type>[A-z]+)[,]?"
+    result = []
+
+    matches = re.finditer(regex, columns_str)
+    for matchNum, match in enumerate(matches, start=1):
+        result.append({"name": match.group("name"), "type": match.group("type")})
+
+    return result
+
+
+def process_row(row, column_names):
+    row = row.replace(",\n", "")
+    row_obj = json.loads(row)
+    column_values = row_obj["row"]["columns"]
+    index = 0
+    result = {}
+    for column in column_values:
+        result[column_names[index]["name"]] = column
+        index += 1
+
+    return result
+

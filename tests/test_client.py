@@ -112,6 +112,36 @@ class TestKSQLAPI(unittest.TestCase):
             self.assertTrue(chunk)
             break
 
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
+    def test_ksql_parse_query(self):
+        topic = self.exist_topic
+        stream_name = "TEST_KSQL_PARSE_QUERY"
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
+                       WITH (kafka_topic='{}', value_format='JSON');".format(
+            stream_name, topic
+        )
+        streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
+
+        if stream_name not in utils.get_all_streams(self.api_client):
+            r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
+            self.assertEqual(r[0]["commandStatus"]["status"], "SUCCESS")
+
+        producer = Producer({"bootstrap.servers": self.bootstrap_servers})
+        producer.produce(self.exist_topic, """{"order_id":3,"total_amount":43,"customer_name":"Palo Alto"}""")
+        producer.flush()
+        chunks = self.api_client.query(
+            "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties
+        )
+        header = next(chunks)
+        columns = utils.parse_columns(header)
+
+        for chunk in chunks:
+            row_obj = utils.process_row(chunk, columns)
+            self.assertEqual(row_obj["ORDER_ID"], 3)
+            self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
+            self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
+            break
+
     @vcr.use_cassette("tests/vcr_cassettes/bad_requests.yml")
     def test_bad_requests(self):
         broken_ksql_string = "noi"
