@@ -79,7 +79,7 @@ class BaseAPI(object):
         start_idle = None
 
         if streaming_response.status == 200:
-            for chunk in streaming_response:
+            for chunk in streaming_response.read_chunked():
                 if chunk != b"\n":
                     start_idle = None
                     yield chunk.decode(encoding)
