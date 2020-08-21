@@ -108,8 +108,11 @@ class TestKSQLAPI(unittest.TestCase):
             "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties
         )
 
+        header = next(chunks)
+        self.assertEqual(header, """[{"header":{"queryId":"none","schema":"`ORDER_ID` INTEGER, `TOTAL_AMOUNT` DOUBLE, `CUSTOMER_NAME` STRING"}},\n""")
+
         for chunk in chunks:
-            self.assertTrue(chunk)
+            self.assertEqual(chunk, """{"row":{"columns":[3,43.0,"Palo Alto"]}},\n""")
             break
 
     @vcr.use_cassette("tests/vcr_cassettes/bad_requests.yml")
