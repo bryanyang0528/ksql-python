@@ -125,3 +125,16 @@ class TestKSQLUtils(unittest.TestCase):
         self.assertEqual(columns[3], {'name': 'MY_ARRAY', 'type': 'ARRAY'})
         self.assertEqual(columns[4], {'name': 'TOTAL_AMOUNT', 'type': 'DOUBLE'})
         self.assertEqual(columns[5], {'name': 'CUSTOMER_NAME', 'type': 'STRING'})
+
+    def test_process_row(self):
+        parsed_header = [{'name': 'ORDER_ID', 'type': 'INTEGER'}, {'name': 'MY_STRUCT', 'type': 'STRUCT'}, {'name': 'MY_MAP', 'type': 'MAP'}, {'name': 'MY_ARRAY', 'type': 'ARRAY'}, {'name': 'TOTAL_AMOUNT', 'type': 'DOUBLE'}, {'name': 'CUSTOMER_NAME', 'type': 'STRING'}]
+        row_str = """{"row":{"columns":[3,{"A":1,"B":"bbb"},{"x":3,"y":4},[1,2,3],43.0,"Palo Alto"]}},\n"""
+
+        row_obj = utils.process_row(row_str, parsed_header)
+
+        self.assertEqual(row_obj["ORDER_ID"], 3)
+        self.assertEqual(row_obj["MY_STRUCT"], {"A": 1, "B": "bbb"})
+        self.assertEqual(row_obj["MY_MAP"], {"x": 3, "y": 4})
+        self.assertEqual(row_obj["MY_ARRAY"], [1, 2, 3])
+        self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
+        self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
