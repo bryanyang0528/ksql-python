@@ -8,6 +8,9 @@ import requests
 import urllib
 from copy import deepcopy
 from requests import Timeout
+from urllib.parse import urlparse
+from hyper import HTTPConnection
+
 
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, InvalidQueryError, KSQLError
@@ -65,6 +68,30 @@ class BaseAPI(object):
         res = json.loads(response)
         return res
 
+    def query2(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
+        """
+        Process streaming incoming data.
+
+        """
+        streaming_response = self._request2(
+            endpoint="query-stream", sql_string=query_string, stream_properties=stream_properties
+        )
+        start_idle = None
+
+        if streaming_response.status == 200:
+            for chunk in streaming_response:
+                if chunk != b"\n":
+                    start_idle = None
+                    yield chunk.decode(encoding)
+                else:
+                    if not start_idle:
+                        start_idle = time.time()
+                    if idle_timeout and time.time() - start_idle > idle_timeout:
+                        print("Ending query because of time out! ({} seconds)".format(idle_timeout))
+                        return
+        else:
+            raise ValueError("Return code is {}.".format(streaming_response.status))
+
     def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
         """
         Process streaming incoming data.
@@ -92,6 +119,32 @@ class BaseAPI(object):
     def get_request(self, endpoint):
         auth = (self.api_key, self.secret) if self.api_key or self.secret else None
         return requests.get(endpoint, headers=self.headers, auth=auth)
+
+    def _request2(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
+        url = "{}/{}".format(self.url, endpoint)
+
+        logging.debug("KSQL generated: {}".format(sql_string))
+
+        sql_string = self._validate_sql_string(sql_string)
+        body = {"sql": sql_string}
+        if stream_properties:
+            body["properties"] = stream_properties
+        else:
+            body["properties"] = {}
+        data = json.dumps(body).encode(encoding)
+
+        headers = deepcopy(self.headers)
+        if self.api_key and self.secret:
+            base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8")).decode("utf-8")
+            headers["Authorization"] = "Basic %s" % base64string
+
+        parsed_uri = urlparse(self.url)
+        c = HTTPConnection(parsed_uri.netloc)
+        c.request(method=method.upper(), url=url, headers=headers, body=data)
+
+        resp = c.get_response()
+
+        return resp
 
     def _request(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
