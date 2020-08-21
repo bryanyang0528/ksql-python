@@ -1,5 +1,6 @@
 import requests
 import unittest
+import json
 import vcr
 from confluent_kafka import Producer
 
@@ -104,6 +105,8 @@ class TestKSQLAPI(unittest.TestCase):
         producer = Producer({"bootstrap.servers": self.bootstrap_servers})
         producer.produce(self.exist_topic, """{"order_id":3,"total_amount":43,"customer_name":"Palo Alto"}""")
         producer.flush()
+
+        # test legacy HTTP/1.1 request
         chunks = self.api_client.query(
             "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties
         )
@@ -113,6 +116,21 @@ class TestKSQLAPI(unittest.TestCase):
 
         for chunk in chunks:
             self.assertEqual(chunk, """{"row":{"columns":[3,43.0,"Palo Alto"]}},\n""")
+            break
+
+        # test new HTTP/2 request
+        chunks = self.api_client.query(
+            "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties, use_http2=True
+        )
+
+        header = next(chunks)
+        header_obj = json.loads(header)
+        self.assertEqual(header_obj["columnNames"], ['ORDER_ID', 'TOTAL_AMOUNT', 'CUSTOMER_NAME'])
+        self.assertEqual(header_obj["columnTypes"], ['INTEGER', 'DOUBLE', 'STRING'])
+
+        for chunk in chunks:
+            chunk_obj = json.loads(chunk)
+            self.assertEqual(chunk_obj, [3,43.0, "Palo Alto"])
             break
 
     @vcr.use_cassette("tests/vcr_cassettes/bad_requests.yml")
