@@ -81,8 +81,10 @@ def parse_columns(columns_str):
 
 
 def process_row(row, column_names):
-    row = row.replace(",\n", "")
+    row = row.replace(",\n", "").replace("]\n", "")
     row_obj = json.loads(row)
+    if 'finalMessage' in row_obj:
+        return None
     column_values = row_obj["row"]["columns"]
     index = 0
     result = {}
@@ -103,5 +105,7 @@ def process_query_result(results, return_objects=None):
 
     for result in results:
         row_obj = process_row(result, columns)
+        if row_obj is None:
+            return
         yield row_obj
 
