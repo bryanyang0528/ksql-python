@@ -70,7 +70,7 @@ def get_dependent_queries(api_client, stream_name):
 
 
 def parse_columns(columns_str):
-    regex = r"`(?P<name>[A-Z_]+)` (?P<type>[A-z]+)[,]?"
+    regex = r"(?<!\<)`(?P<name>[A-Z_]+)` (?P<type>[A-z]+)[\<, \"](?!\>)"
     result = []
 
     matches = re.finditer(regex, columns_str)

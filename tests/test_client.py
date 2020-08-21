@@ -114,14 +114,14 @@ class TestKSQLAPI(unittest.TestCase):
 
     @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
     def test_ksql_parse_query_result_with_utils(self):
-        topic = "test_ksql_parse_query_result_with_utils"
-        stream_name = "TEST_KSQL_PARSE_QUERY_WITH_UTILS"
+        topic = "TEST_KSQL_PARSE_QUERY_RESULT_WITH_UTILS_TOPIC"
+        stream_name = "TEST_KSQL_PARSE_QUERY_RESULT_WITH_UTILS_STREAM"
 
         producer = Producer({"bootstrap.servers": self.bootstrap_servers})
-        producer.produce(topic, """{"order_id":3,"total_amount":43,"customer_name":"Palo Alto","my_struct":{"a":1,"b":"bbb"}}""")
+        producer.produce(topic, """{"order_id":3,"my_struct":{"a":1,"b":"bbb"},"total_amount":43,"customer_name":"Palo Alto"}""")
         producer.flush()
 
-        ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR, MY_STRUCT STRUCT<A INT, B VARCHAR>) \
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, MY_STRUCT STRUCT<A INT, B VARCHAR>, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
                        WITH (kafka_topic='{}', value_format='JSON');".format(
             stream_name, topic
         )
