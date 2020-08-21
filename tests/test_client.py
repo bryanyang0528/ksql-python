@@ -118,10 +118,10 @@ class TestKSQLAPI(unittest.TestCase):
         stream_name = "TEST_KSQL_PARSE_QUERY_RESULT_WITH_UTILS_STREAM"
 
         producer = Producer({"bootstrap.servers": self.bootstrap_servers})
-        producer.produce(topic, """{"order_id":3,"my_struct":{"a":1,"b":"bbb"},"total_amount":43,"customer_name":"Palo Alto"}""")
+        producer.produce(topic, """{"order_id":3,"my_struct":{"a":1,"b":"bbb"}, "my_map":{"x":3, "y":4}, "my_array":[1,2,3], "total_amount":43,"customer_name":"Palo Alto"}""")
         producer.flush()
 
-        ksql_string = "CREATE STREAM {} (ORDER_ID INT, MY_STRUCT STRUCT<A INT, B VARCHAR>, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, MY_STRUCT STRUCT<A INT, B VARCHAR>, MY_MAP MAP<VARCHAR, INT>, MY_ARRAY ARRAY<INT>, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
                        WITH (kafka_topic='{}', value_format='JSON');".format(
             stream_name, topic
         )
@@ -130,8 +130,6 @@ class TestKSQLAPI(unittest.TestCase):
         if stream_name not in utils.get_all_streams(self.api_client):
             r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
             self.assertEqual(r[0]["commandStatus"]["status"], "SUCCESS")
-
-
 
         chunks = self.api_client.query(
             "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties
@@ -142,6 +140,9 @@ class TestKSQLAPI(unittest.TestCase):
         for chunk in chunks:
             row_obj = utils.process_row(chunk, columns)
             self.assertEqual(row_obj["ORDER_ID"], 3)
+            self.assertEqual(row_obj["MY_STRUCT"], {"A": 1, "B": "bbb"})
+            self.assertEqual(row_obj["MY_MAP"], {"x": 3, "y": 4})
+            self.assertEqual(row_obj["MY_ARRAY"], [1, 2, 3])
             self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
             self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
             break
