@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 from ksql.api import SimplifiedAPI
-from ksql.utils import parse_columns, process_row
+from ksql.utils import process_query_result
 
 
 class KSQLAPI(object):
@@ -51,16 +51,7 @@ class KSQLAPI(object):
             idle_timeout=idle_timeout,
         )
 
-        if return_objects is None:
-            yield from results
-
-        # parse rows into objects
-        header = next(results)
-        columns = parse_columns(header)
-
-        for result in results:
-            row_obj = process_row(result, columns)
-            yield row_obj
+        yield from process_query_result(results, return_objects)
 
     def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
         return self.sa.create_stream(

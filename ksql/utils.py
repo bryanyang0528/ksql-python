@@ -92,3 +92,16 @@ def process_row(row, column_names):
 
     return result
 
+
+def process_query_result(results, return_objects):
+    if return_objects is None:
+        yield from results
+
+    # parse rows into objects
+    header = next(results)
+    columns = parse_columns(header)
+
+    for result in results:
+        row_obj = process_row(result, columns)
+        yield row_obj
+
