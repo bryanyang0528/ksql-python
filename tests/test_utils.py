@@ -138,3 +138,14 @@ class TestKSQLUtils(unittest.TestCase):
         self.assertEqual(row_obj["MY_ARRAY"], [1, 2, 3])
         self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
         self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
+
+    def test_process_query_result(self):
+        def mock_generator():
+            results = [1,2,3,4,5,6]
+            for a in results:
+                yield a
+
+        results = utils.process_query_result(mock_generator())
+
+        first_result = next(results)
+        self.assertEqual(first_result, 1)

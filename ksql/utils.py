@@ -93,7 +93,7 @@ def process_row(row, column_names):
     return result
 
 
-def process_query_result(results, return_objects):
+def process_query_result(results, return_objects=None):
     if return_objects is None:
         yield from results
 
