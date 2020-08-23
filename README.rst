@@ -124,6 +124,26 @@ This command returns a generator. It can be printed e.g. by reading its values v
        {"row":{"columns":[1512787753488,"key1",1,2,3]},"errorMessage":null}
        {"row":{"columns":[1512787753888,"key1",1,2,3]},"errorMessage":null}
 
+Query with HTTP/2
+^^^^^^^^^^^^^^^^^
+Execute queries with the new ``query-stream`` endpoint. Documented `here <https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-rest-api/streaming-endpoint/#executing-pull-or-push-queries>`_
+
+To execute a sql query use the same syntax as the regular query, with the additional ``use_http2=True`` parameter.
+
+.. code:: python
+
+    client.query('select * from table1', use_http2=True)
+
+A generator is returned with the following example response
+
+   ::
+
+       {"queryId":"44d8413c-0018-423d-b58f-3f2064b9a312","columnNames":["ORDER_ID","TOTAL_AMOUNT","CUSTOMER_NAME"],"columnTypes":["INTEGER","DOUBLE","STRING"]}
+       [3,43.0,"Palo Alto"]
+       [3,43.0,"Palo Alto"]
+       [3,43.0,"Palo Alto"]
+
+
 Simplified API
 ~~~~~~~~~~~~~~
 
