@@ -179,6 +179,7 @@ class TestKSQLAPI(unittest.TestCase):
             self.assertEqual(chunk["CUSTOMER_NAME"], "Palo Alto")
             break
 
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
     def test_ksql_parse_query_final_message(self):
         topic = "TEST_KSQL_PARSE_QUERY_FINAL_MESSAGE_TOPIC"
         stream_name = "TEST_KSQL_PARSE_QUERY_FINAL_MESSAGE_STREAM"
@@ -208,7 +209,6 @@ class TestKSQLAPI(unittest.TestCase):
             self.assertEqual(row_obj["MY_ARRAY"], [1, 2, 3])
             self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
             self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
-
 
     @vcr.use_cassette("tests/vcr_cassettes/bad_requests.yml")
     def test_bad_requests(self):
