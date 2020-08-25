@@ -74,9 +74,18 @@ class BaseAPI(object):
 
         """
         parsed_uri = urlparse(self.url)
+
+        logging.debug("KSQL generated: {}".format(query_string))
+        sql_string = self._validate_sql_string(query_string)
+        body = {"sql": sql_string}
+        if stream_properties:
+            body["properties"] = stream_properties
+        else:
+            body["properties"] = {}
+
         with HTTPConnection(parsed_uri.netloc) as connection:
             streaming_response = self._request2(
-                endpoint="query-stream", sql_string=query_string, stream_properties=stream_properties, connection=connection
+                endpoint="query-stream",body=body, stream_properties=stream_properties, connection=connection
             )
             start_idle = None
 
@@ -123,17 +132,8 @@ class BaseAPI(object):
         auth = (self.api_key, self.secret) if self.api_key or self.secret else None
         return requests.get(endpoint, headers=self.headers, auth=auth)
 
-    def _request2(self, endpoint, connection, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
+    def _request2(self, endpoint, connection, body, method="POST", stream_properties=None, encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
-
-        logging.debug("KSQL generated: {}".format(sql_string))
-
-        sql_string = self._validate_sql_string(sql_string)
-        body = {"sql": sql_string}
-        if stream_properties:
-            body["properties"] = stream_properties
-        else:
-            body["properties"] = {}
         data = json.dumps(body).encode(encoding)
 
         headers = deepcopy(self.headers)
@@ -179,6 +179,8 @@ class BaseAPI(object):
                 raise KSQLError(content.get("message"), content.get("error_code"), content.get("stackTrace"))
         else:
             return r
+
+
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
