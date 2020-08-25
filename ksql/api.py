@@ -176,7 +176,7 @@ class BaseAPI(object):
                 raise http_error
             else:
                 logging.debug("content: {}".format(content))
-                raise KSQLError(e=content.get("message"), error_code=content.get("error_code"))
+                raise KSQLError(content.get("message"), content.get("error_code"), content.get("stackTrace"))
         else:
             return r
 
