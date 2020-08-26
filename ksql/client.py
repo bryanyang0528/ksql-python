@@ -59,6 +59,9 @@ class KSQLAPI(object):
                 idle_timeout=idle_timeout,
             )
 
+    def close_query(self, query_id):
+        return self.sa.close_query(query_id)
+
     def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
         return self.sa.create_stream(
             table_name=table_name, columns_type=columns_type, topic=topic, value_format=value_format

@@ -85,7 +85,7 @@ class BaseAPI(object):
 
         with HTTPConnection(parsed_uri.netloc) as connection:
             streaming_response = self._request2(
-                endpoint="query-stream",body=body, stream_properties=stream_properties, connection=connection
+                endpoint="query-stream", body=body, connection=connection
             )
             start_idle = None
 
@@ -132,7 +132,7 @@ class BaseAPI(object):
         auth = (self.api_key, self.secret) if self.api_key or self.secret else None
         return requests.get(endpoint, headers=self.headers, auth=auth)
 
-    def _request2(self, endpoint, connection, body, method="POST", stream_properties=None, encoding="utf-8"):
+    def _request2(self, endpoint, connection, body, method="POST", encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
         data = json.dumps(body).encode(encoding)
 
@@ -142,7 +142,6 @@ class BaseAPI(object):
             headers["Authorization"] = "Basic %s" % base64string
 
         connection.request(method=method.upper(), url=url, headers=headers, body=data)
-
         resp = connection.get_response()
 
         return resp
@@ -180,7 +179,22 @@ class BaseAPI(object):
         else:
             return r
 
+    def close_query(self, query_id):
+        body = {"queryId": query_id}
+        data = json.dumps(body).encode("utf-8")
+        url = "{}/{}".format(self.url, "close-query")
 
+        response = requests.post(url=url, data=data)
+
+        if response.status_code == 200:
+            logging.debug("Successfully canceled Query ID: {}".format(query_id))
+            return True
+        elif response.status_code == 400:
+            message = json.loads(response.content)["message"]
+            logging.debug("Failed canceling Query ID: {}: {}".format(query_id, message))
+            return False
+        else:
+            raise ValueError("Return code is {}.".format(response.status_code))
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
