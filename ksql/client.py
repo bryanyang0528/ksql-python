@@ -62,6 +62,9 @@ class KSQLAPI(object):
     def close_query(self, query_id):
         return self.sa.close_query(query_id)
 
+    def inserts_stream(self, stream_name, rows):
+        return self.sa.inserts_stream(stream_name, rows)
+
     def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
         return self.sa.create_stream(
             table_name=table_name, columns_type=columns_type, topic=topic, value_format=value_format

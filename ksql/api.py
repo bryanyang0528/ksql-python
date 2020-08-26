@@ -196,6 +196,30 @@ class BaseAPI(object):
         else:
             raise ValueError("Return code is {}.".format(response.status_code))
 
+    def inserts_stream(self, stream_name, rows):
+        body = f'{{"target":"{stream_name}"}}'
+        for row in rows:
+            body += '\n{}'.format(json.dumps(row))
+
+        parsed_uri = urlparse(self.url)
+        url = "{}/{}".format(self.url, "inserts-stream")
+        headers = deepcopy(self.headers)
+        with HTTPConnection(parsed_uri.netloc) as connection:
+            connection.request("POST", url, bytes(body, "utf-8"), headers)
+            response = connection.get_response()
+            result = response.read()
+
+        result_str = result.decode("utf-8")
+        result_chunks = result_str.split("\n")
+        return_arr = []
+        for chunk in result_chunks:
+            try:
+                return_arr.append(json.loads(chunk))
+            except:
+                pass
+
+        return return_arr
+
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):
         """

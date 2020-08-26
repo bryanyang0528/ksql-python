@@ -133,13 +133,34 @@ class TestKSQLAPI(unittest.TestCase):
             self.assertEqual(chunk_obj, [3,43.0, "Palo Alto"])
             break
 
-    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
+    @vcr.use_cassette("tests/vcr_cassettes/ksql_close_query.yml")
     def test_ksql_close_query(self):
         result = self.api_client.close_query("123")
 
         self.assertFalse(result)
 
+    def test_inserts_stream(self):
+        topic = self.exist_topic
+        stream_name = "TEST_INSERTS_STREAM_STREAM"
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
+                       WITH (kafka_topic='{}', value_format='JSON');".format(
+            stream_name, topic
+        )
+        streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
 
+        if "TEST_KSQL_CREATE_STREAM" not in utils.get_all_streams(self.api_client):
+            r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
+            self.assertEqual(r[0]["commandStatus"]["status"], "SUCCESS")
+
+        rows = [
+            {"ORDER_ID": 1, "TOTAL_AMOUNT": 23.5, "CUSTOMER_NAME": "abc"},
+            {"ORDER_ID": 2, "TOTAL_AMOUNT": 3.7, "CUSTOMER_NAME": "xyz"}
+        ]
+
+        results = self.api_client.inserts_stream(stream_name, rows)
+
+        for result in results:
+            self.assertEqual(result["status"], "ok")
 
     @vcr.use_cassette("tests/vcr_cassettes/bad_requests.yml")
     def test_bad_requests(self):
