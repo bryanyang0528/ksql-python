@@ -126,7 +126,7 @@ This command returns a generator. It can be printed e.g. by reading its values v
 
 Query with HTTP/2
 ^^^^^^^^^^^^^^^^^
-Execute queries with the new ``query-stream`` endpoint. Documented `here <https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-rest-api/streaming-endpoint/#executing-pull-or-push-queries>`_
+Execute queries with the new ``/query-stream`` endpoint. Documented `here <https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-rest-api/streaming-endpoint/#executing-pull-or-push-queries>`_
 
 To execute a sql query use the same syntax as the regular query, with the additional ``use_http2=True`` parameter.
 
@@ -142,6 +142,29 @@ A generator is returned with the following example response
        [3,43.0,"Palo Alto"]
        [3,43.0,"Palo Alto"]
        [3,43.0,"Palo Alto"]
+
+To terminate the query above use the ``close_query`` call.
+Provide the ``queryId`` returned from the ``query`` call.
+
+.. code:: python
+
+    client.close_query("44d8413c-0018-423d-b58f-3f2064b9a312")
+
+Insert rows into a Stream with HTTP/2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Uses the new ``/inserts-stream`` endpoint. See `documentation <https://docs.ksqldb.io/en/0.10.0-ksqldb/developer-guide/ksqldb-rest-api/streaming-endpoint/#inserting-rows-into-an-existing-stream>`_
+
+.. code:: python
+
+    rows = [
+            {"ORDER_ID": 1, "TOTAL_AMOUNT": 23.5, "CUSTOMER_NAME": "abc"},
+            {"ORDER_ID": 2, "TOTAL_AMOUNT": 3.7, "CUSTOMER_NAME": "xyz"}
+        ]
+
+    results = self.api_client.inserts_stream("my_stream_name", rows)
+
+An array of object will be returned on success, with the status of each row inserted.
 
 
 Simplified API
