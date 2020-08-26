@@ -133,12 +133,13 @@ class TestKSQLAPI(unittest.TestCase):
             self.assertEqual(chunk_obj, [3,43.0, "Palo Alto"])
             break
 
-    @vcr.use_cassette("tests/vcr_cassettes/ksql_close_query.yml")
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support HTTP/2")
     def test_ksql_close_query(self):
         result = self.api_client.close_query("123")
 
         self.assertFalse(result)
 
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
     def test_inserts_stream(self):
         topic = self.exist_topic
         stream_name = "TEST_INSERTS_STREAM_STREAM"
