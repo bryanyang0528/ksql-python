@@ -197,7 +197,7 @@ class BaseAPI(object):
             raise ValueError("Return code is {}.".format(response.status_code))
 
     def inserts_stream(self, stream_name, rows):
-        body = f'{{"target":"{stream_name}"}}'
+        body = '{{"target":"{}"}}'.format(stream_name)
         for row in rows:
             body += '\n{}'.format(json.dumps(row))
 
