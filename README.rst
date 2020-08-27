@@ -12,6 +12,12 @@ Supported Python version: 3.5+
 .. image:: https://codecov.io/gh/bryanyang0528/ksql-python/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/bryanyang0528/ksql-python
 
+.. image:: https://pepy.tech/badge/ksql
+  :target: https://pepy.tech/project/ksql
+
+.. image:: https://pepy.tech/badge/ksql/month
+  :target: https://pepy.tech/project/ksql/month
+  
 Installation
 ------------
 
