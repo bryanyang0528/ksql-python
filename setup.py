@@ -32,7 +32,8 @@ setuptools_kwargs = {
     'install_requires': [
 	    'requests',
 		'six',
-		'urllib3'
+		'urllib3',
+        'hyper'
     ],
     'zip_safe': False,
 }
