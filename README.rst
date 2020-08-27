@@ -18,6 +18,9 @@ Supported Python version: 3.5+
 .. image:: https://pepy.tech/badge/ksql/month
   :target: https://pepy.tech/project/ksql/month
   
+.. image:: https://img.shields.io/badge/license-MIT-yellow.svg
+  :target: https://github.com/bryanyang0528/ksql-python/blob/master/LICENSE  
+  
 Installation
 ------------
 
