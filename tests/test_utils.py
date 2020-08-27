@@ -113,3 +113,58 @@ class TestKSQLUtils(unittest.TestCase):
         read_queries, write_queries = utils.get_dependent_queries(self.api_client, stream_name_as)
         self.assertEqual(read_queries, [])
         self.assertTrue(write_queries[0].startswith("CSAS_KSQL_PYTHON_TEST_TEST_GET_DEPENDENT_QUERIES_AS"))
+
+    def test_parse_columns(self):
+        header_str = """[{"header":{"queryId":"none","schema":"`ORDER_ID` INTEGER, `MY_STRUCT` STRUCT<`A` INTEGER, `B` STRING>, `MY_MAP` MAP<STRING, INTEGER>, `MY_ARRAY` ARRAY<INTEGER>, `TOTAL_AMOUNT` DOUBLE, `CUSTOMER_NAME` STRING"}},"""
+
+        columns = utils.parse_columns(header_str)
+
+        self.assertEqual(columns[0], {'name': 'ORDER_ID', 'type': 'INTEGER'})
+        self.assertEqual(columns[1], {'name': 'MY_STRUCT', 'type': 'STRUCT'})
+        self.assertEqual(columns[2], {'name': 'MY_MAP', 'type': 'MAP'})
+        self.assertEqual(columns[3], {'name': 'MY_ARRAY', 'type': 'ARRAY'})
+        self.assertEqual(columns[4], {'name': 'TOTAL_AMOUNT', 'type': 'DOUBLE'})
+        self.assertEqual(columns[5], {'name': 'CUSTOMER_NAME', 'type': 'STRING'})
+
+    def test_process_row(self):
+        parsed_header = [{'name': 'ORDER_ID', 'type': 'INTEGER'}, {'name': 'MY_STRUCT', 'type': 'STRUCT'}, {'name': 'MY_MAP', 'type': 'MAP'}, {'name': 'MY_ARRAY', 'type': 'ARRAY'}, {'name': 'TOTAL_AMOUNT', 'type': 'DOUBLE'}, {'name': 'CUSTOMER_NAME', 'type': 'STRING'}]
+        row_str = """{"row":{"columns":[3,{"A":1,"B":"bbb"},{"x":3,"y":4},[1,2,3],43.0,"Palo Alto"]}},\n"""
+
+        row_obj = utils.process_row(row_str, parsed_header)
+
+        self.assertEqual(row_obj["ORDER_ID"], 3)
+        self.assertEqual(row_obj["MY_STRUCT"], {"A": 1, "B": "bbb"})
+        self.assertEqual(row_obj["MY_MAP"], {"x": 3, "y": 4})
+        self.assertEqual(row_obj["MY_ARRAY"], [1, 2, 3])
+        self.assertEqual(row_obj["TOTAL_AMOUNT"], 43)
+        self.assertEqual(row_obj["CUSTOMER_NAME"], "Palo Alto")
+
+    def test_process_query_result(self):
+        def mock_generator():
+            results = [1,2,3,4,5,6]
+            for a in results:
+                yield a
+
+        results = utils.process_query_result(mock_generator())
+
+        first_result = next(results)
+        self.assertEqual(first_result, 1)
+
+    def test_process_query_result_parse_rows(self):
+        def mock_generator():
+            header_str = """[{"header":{"queryId":"none","schema":"`ORDER_ID` INTEGER, `MY_STRUCT` STRUCT<`A` INTEGER, `B` STRING>, `MY_MAP` MAP<STRING, INTEGER>, `MY_ARRAY` ARRAY<INTEGER>, `TOTAL_AMOUNT` DOUBLE, `CUSTOMER_NAME` STRING"}},"""
+            row_str = """{"row":{"columns":[3,{"A":1,"B":"bbb"},{"x":3,"y":4},[1,2,3],43.0,"Palo Alto"]}},\n"""
+
+            results = [header_str, row_str]
+            for a in results:
+                yield a
+
+        rows = utils.process_query_result(mock_generator(), True)
+
+        first_row = next(rows)
+        self.assertEqual(first_row["ORDER_ID"], 3)
+        self.assertEqual(first_row["MY_STRUCT"], {"A": 1, "B": "bbb"})
+        self.assertEqual(first_row["MY_MAP"], {"x": 3, "y": 4})
+        self.assertEqual(first_row["MY_ARRAY"], [1, 2, 3])
+        self.assertEqual(first_row["TOTAL_AMOUNT"], 43)
+        self.assertEqual(first_row["CUSTOMER_NAME"], "Palo Alto")
