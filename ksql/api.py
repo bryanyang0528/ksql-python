@@ -8,6 +8,9 @@ import requests
 import urllib
 from copy import deepcopy
 from requests import Timeout
+from urllib.parse import urlparse
+from hyper import HTTPConnection
+
 
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, InvalidQueryError, KSQLError
@@ -65,6 +68,42 @@ class BaseAPI(object):
         res = json.loads(response)
         return res
 
+    def query2(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
+        """
+        Process streaming incoming data with HTTP/2.
+
+        """
+        parsed_uri = urlparse(self.url)
+
+        logging.debug("KSQL generated: {}".format(query_string))
+        sql_string = self._validate_sql_string(query_string)
+        body = {"sql": sql_string}
+        if stream_properties:
+            body["properties"] = stream_properties
+        else:
+            body["properties"] = {}
+
+        with HTTPConnection(parsed_uri.netloc) as connection:
+            streaming_response = self._request2(
+                endpoint="query-stream", body=body, connection=connection
+            )
+            start_idle = None
+
+            if streaming_response.status == 200:
+                for chunk in streaming_response.read_chunked():
+                    if chunk != b"\n":
+                        start_idle = None
+                        yield chunk.decode(encoding)
+
+                    else:
+                        if not start_idle:
+                            start_idle = time.time()
+                        if idle_timeout and time.time() - start_idle > idle_timeout:
+                            print("Ending query because of time out! ({} seconds)".format(idle_timeout))
+                            return
+            else:
+                raise ValueError("Return code is {}.".format(streaming_response.status))
+
     def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
         """
         Process streaming incoming data.
@@ -92,6 +131,20 @@ class BaseAPI(object):
     def get_request(self, endpoint):
         auth = (self.api_key, self.secret) if self.api_key or self.secret else None
         return requests.get(endpoint, headers=self.headers, auth=auth)
+
+    def _request2(self, endpoint, connection, body, method="POST", encoding="utf-8"):
+        url = "{}/{}".format(self.url, endpoint)
+        data = json.dumps(body).encode(encoding)
+
+        headers = deepcopy(self.headers)
+        if self.api_key and self.secret:
+            base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8")).decode("utf-8")
+            headers["Authorization"] = "Basic %s" % base64string
+
+        connection.request(method=method.upper(), url=url, headers=headers, body=data)
+        resp = connection.get_response()
+
+        return resp
 
     def _request(self, endpoint, method="POST", sql_string="", stream_properties=None, encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
@@ -125,6 +178,47 @@ class BaseAPI(object):
                 raise KSQLError(content.get("message"), content.get("error_code"), content.get("stackTrace"))
         else:
             return r
+
+    def close_query(self, query_id):
+        body = {"queryId": query_id}
+        data = json.dumps(body).encode("utf-8")
+        url = "{}/{}".format(self.url, "close-query")
+
+        response = requests.post(url=url, data=data)
+
+        if response.status_code == 200:
+            logging.debug("Successfully canceled Query ID: {}".format(query_id))
+            return True
+        elif response.status_code == 400:
+            message = json.loads(response.content)["message"]
+            logging.debug("Failed canceling Query ID: {}: {}".format(query_id, message))
+            return False
+        else:
+            raise ValueError("Return code is {}.".format(response.status_code))
+
+    def inserts_stream(self, stream_name, rows):
+        body = '{{"target":"{}"}}'.format(stream_name)
+        for row in rows:
+            body += '\n{}'.format(json.dumps(row))
+
+        parsed_uri = urlparse(self.url)
+        url = "{}/{}".format(self.url, "inserts-stream")
+        headers = deepcopy(self.headers)
+        with HTTPConnection(parsed_uri.netloc) as connection:
+            connection.request("POST", url, bytes(body, "utf-8"), headers)
+            response = connection.get_response()
+            result = response.read()
+
+        result_str = result.decode("utf-8")
+        result_chunks = result_str.split("\n")
+        return_arr = []
+        for chunk in result_chunks:
+            try:
+                return_arr.append(json.loads(chunk))
+            except:
+                pass
+
+        return return_arr
 
     @staticmethod
     def retry(exceptions, delay=1, max_retries=5):

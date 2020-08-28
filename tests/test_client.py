@@ -1,5 +1,6 @@
 import requests
 import unittest
+import json
 import vcr
 from confluent_kafka import Producer
 
@@ -104,13 +105,64 @@ class TestKSQLAPI(unittest.TestCase):
         producer = Producer({"bootstrap.servers": self.bootstrap_servers})
         producer.produce(self.exist_topic, """{"order_id":3,"total_amount":43,"customer_name":"Palo Alto"}""")
         producer.flush()
+
+        # test legacy HTTP/1.1 request
         chunks = self.api_client.query(
             "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties
         )
 
+        header = next(chunks)
+        self.assertEqual(header, """[{"header":{"queryId":"none","schema":"`ORDER_ID` INTEGER, `TOTAL_AMOUNT` DOUBLE, `CUSTOMER_NAME` STRING"}},\n""")
+
         for chunk in chunks:
-            self.assertTrue(chunk)
+            self.assertEqual(chunk, """{"row":{"columns":[3,43.0,"Palo Alto"]}},\n""")
             break
+
+        # test new HTTP/2 request
+        chunks = self.api_client.query(
+            "select * from {} EMIT CHANGES".format(stream_name), stream_properties=streamProperties, use_http2=True
+        )
+
+        header = next(chunks)
+        header_obj = json.loads(header)
+        self.assertEqual(header_obj["columnNames"], ['ORDER_ID', 'TOTAL_AMOUNT', 'CUSTOMER_NAME'])
+        self.assertEqual(header_obj["columnTypes"], ['INTEGER', 'DOUBLE', 'STRING'])
+
+        for chunk in chunks:
+            chunk_obj = json.loads(chunk)
+            self.assertEqual(chunk_obj, [3,43.0, "Palo Alto"])
+            break
+
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support HTTP/2")
+    def test_ksql_close_query(self):
+        result = self.api_client.close_query("123")
+
+        self.assertFalse(result)
+
+    @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
+    def test_inserts_stream(self):
+        topic = self.exist_topic
+        stream_name = "TEST_INSERTS_STREAM_STREAM"
+        ksql_string = "CREATE STREAM {} (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR) \
+        WITH (kafka_topic='{}', value_format='JSON');".format(
+                    stream_name, topic
+                )
+
+        streamProperties = {"ksql.streams.auto.offset.reset": "earliest"}
+
+        if "TEST_KSQL_CREATE_STREAM" not in utils.get_all_streams(self.api_client):
+            r = self.api_client.ksql(ksql_string, stream_properties=streamProperties)
+            self.assertEqual(r[0]["commandStatus"]["status"], "SUCCESS")
+
+        rows = [
+            {"ORDER_ID": 1, "TOTAL_AMOUNT": 23.5, "CUSTOMER_NAME": "abc"},
+            {"ORDER_ID": 2, "TOTAL_AMOUNT": 3.7, "CUSTOMER_NAME": "xyz"}
+        ]
+
+        results = self.api_client.inserts_stream(stream_name, rows)
+
+        for result in results:
+            self.assertEqual(result["status"], "ok")
 
     @unittest.skipIf(not utils.check_kafka_available("localhost:29092"), "vcrpy does not support streams yet")
     def test_ksql_parse_query_result_with_utils(self):
