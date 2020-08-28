@@ -21,7 +21,7 @@ def get_install_requirements(path):
     ]
 
 # Get version from __init__.py file
-VERSION = "0.10.1.1"
+VERSION = "0.10.2"
 
 here = os.path.dirname(__file__)
 
