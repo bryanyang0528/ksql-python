@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 from ksql.api import SimplifiedAPI
+from ksql.utils import process_query_result
 
 
 class KSQLAPI(object):
@@ -41,14 +42,31 @@ class KSQLAPI(object):
     def ksql(self, ksql_string, stream_properties=None):
         return self.sa.ksql(ksql_string, stream_properties=stream_properties)
 
-    def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
-        return self.sa.query(
-            query_string=query_string,
-            encoding=encoding,
-            chunk_size=chunk_size,
-            stream_properties=stream_properties,
-            idle_timeout=idle_timeout,
-        )
+    def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None, use_http2=None, return_objects=None):
+        if use_http2:
+            yield from self.sa.query2(
+                query_string=query_string,
+                encoding=encoding,
+                chunk_size=chunk_size,
+                stream_properties=stream_properties,
+                idle_timeout=idle_timeout,
+            )
+        else:
+            results = self.sa.query(
+                query_string=query_string,
+                encoding=encoding,
+                chunk_size=chunk_size,
+                stream_properties=stream_properties,
+                idle_timeout=idle_timeout,
+            )
+
+            yield from process_query_result(results, return_objects)
+
+    def close_query(self, query_id):
+        return self.sa.close_query(query_id)
+
+    def inserts_stream(self, stream_name, rows):
+        return self.sa.inserts_stream(stream_name, rows)
 
     def create_stream(self, table_name, columns_type, topic, value_format="JSON"):
         return self.sa.create_stream(

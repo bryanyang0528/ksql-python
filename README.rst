@@ -12,6 +12,15 @@ Supported Python version: 3.5+
 .. image:: https://codecov.io/gh/bryanyang0528/ksql-python/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/bryanyang0528/ksql-python
 
+.. image:: https://pepy.tech/badge/ksql
+  :target: https://pepy.tech/project/ksql
+
+.. image:: https://pepy.tech/badge/ksql/month
+  :target: https://pepy.tech/project/ksql/month
+  
+.. image:: https://img.shields.io/badge/license-MIT-yellow.svg
+  :target: https://github.com/bryanyang0528/ksql-python/blob/master/LICENSE  
+  
 Installation
 ------------
 
@@ -123,6 +132,49 @@ This command returns a generator. It can be printed e.g. by reading its values v
        {"row":{"columns":[1512787753200,"key1",1,2,3]},"errorMessage":null}
        {"row":{"columns":[1512787753488,"key1",1,2,3]},"errorMessage":null}
        {"row":{"columns":[1512787753888,"key1",1,2,3]},"errorMessage":null}
+
+Query with HTTP/2
+^^^^^^^^^^^^^^^^^
+Execute queries with the new ``/query-stream`` endpoint. Documented `here <https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-rest-api/streaming-endpoint/#executing-pull-or-push-queries>`_
+
+To execute a sql query use the same syntax as the regular query, with the additional ``use_http2=True`` parameter.
+
+.. code:: python
+
+    client.query('select * from table1', use_http2=True)
+
+A generator is returned with the following example response
+
+   ::
+
+       {"queryId":"44d8413c-0018-423d-b58f-3f2064b9a312","columnNames":["ORDER_ID","TOTAL_AMOUNT","CUSTOMER_NAME"],"columnTypes":["INTEGER","DOUBLE","STRING"]}
+       [3,43.0,"Palo Alto"]
+       [3,43.0,"Palo Alto"]
+       [3,43.0,"Palo Alto"]
+
+To terminate the query above use the ``close_query`` call.
+Provide the ``queryId`` returned from the ``query`` call.
+
+.. code:: python
+
+    client.close_query("44d8413c-0018-423d-b58f-3f2064b9a312")
+
+Insert rows into a Stream with HTTP/2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Uses the new ``/inserts-stream`` endpoint. See `documentation <https://docs.ksqldb.io/en/0.10.0-ksqldb/developer-guide/ksqldb-rest-api/streaming-endpoint/#inserting-rows-into-an-existing-stream>`_
+
+.. code:: python
+
+    rows = [
+            {"ORDER_ID": 1, "TOTAL_AMOUNT": 23.5, "CUSTOMER_NAME": "abc"},
+            {"ORDER_ID": 2, "TOTAL_AMOUNT": 3.7, "CUSTOMER_NAME": "xyz"}
+        ]
+
+    results = self.api_client.inserts_stream("my_stream_name", rows)
+
+An array of object will be returned on success, with the status of each row inserted.
+
 
 Simplified API
 ~~~~~~~~~~~~~~
