@@ -282,7 +282,7 @@ Run commands from a .ksql file. Can only support ksql commands and not streaming
 
 .. code:: python
 
-     from ksql import FileUpload
+     from ksql.upload import FileUpload
      pointer = FileUpload('http://ksql-server:8080')
      pointer.upload('rules.ksql')
 
