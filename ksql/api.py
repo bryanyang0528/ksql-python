@@ -54,7 +54,7 @@ class BaseAPI(object):
                 raise KSQLError("Unknown Error: {}".format(r.content))
         else:
             # seems to be the old API behavior, so some errors have status 200, bug??
-            if r_json[0]["@type"] == "currentStatus" and r_json[0]["commandStatus"]["status"] == "ERROR":
+            if r_json and r_json[0]["@type"] == "currentStatus" and r_json[0]["commandStatus"]["status"] == "ERROR":
                 error_message = r_json[0]["commandStatus"]["message"]
                 error_code = None
                 stackTrace = None
