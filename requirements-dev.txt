@@ -29,7 +29,7 @@ prompt-toolkit==3.0.5
 ptyprocess==0.6.0
 pycodestyle==2.6.0
 pyflakes==2.2.0
-Pygments==2.6.1
+Pygments==2.7.4
 pytz==2020.1
 PyYAML==5.3.1
 regex==2020.7.14
