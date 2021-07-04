@@ -83,7 +83,7 @@ def parse_columns(columns_str):
 def process_row(row, column_names):
     row = row.replace(",\n", "").replace("]\n", "")
     row_obj = json.loads(row)
-    if 'finalMessage' in row_obj:
+    if "finalMessage" in row_obj:
         return None
     column_values = row_obj["row"]["columns"]
     index = 0
@@ -100,7 +100,10 @@ def process_query_result(results, return_objects=None):
         yield from results
 
     # parse rows into objects
-    header = next(results)
+    try:
+        header = next(results)
+    except StopIteration:
+        return
     columns = parse_columns(header)
 
     for result in results:
@@ -108,4 +111,3 @@ def process_query_result(results, return_objects=None):
         if row_obj is None:
             return
         yield row_obj
-
