@@ -9,8 +9,7 @@ import urllib
 from copy import deepcopy
 from requests import Timeout
 from urllib.parse import urlparse
-from hyper import HTTPConnection
-
+import httpx
 
 from ksql.builder import SQLBuilder
 from ksql.errors import CreateError, InvalidQueryError, KSQLError
@@ -83,26 +82,24 @@ class BaseAPI(object):
         else:
             body["properties"] = {}
 
-        with HTTPConnection(parsed_uri.netloc) as connection:
-            streaming_response = self._request2(
-                endpoint="query-stream", body=body, connection=connection
+        streaming_response = self._request2(
+                endpoint="query-stream", body=body, connection=httpx.request
             )
-            start_idle = None
+        start_idle = None
+        if streaming_response.status_code == 200:
+            for chunk in streaming_response.iter_bytes(chunk_size):
+                if chunk != b"\n":
+                    start_idle = None
+                    yield chunk.decode(encoding)
 
-            if streaming_response.status == 200:
-                for chunk in streaming_response.read_chunked():
-                    if chunk != b"\n":
-                        start_idle = None
-                        yield chunk.decode(encoding)
-
-                    else:
-                        if not start_idle:
-                            start_idle = time.time()
-                        if idle_timeout and time.time() - start_idle > idle_timeout:
-                            print("Ending query because of time out! ({} seconds)".format(idle_timeout))
-                            return
-            else:
-                raise ValueError("Return code is {}.".format(streaming_response.status))
+                else:
+                    if not start_idle:
+                        start_idle = time.time()
+                    if idle_timeout and time.time() - start_idle > idle_timeout:
+                        print("Ending query because of time out! ({} seconds)".format(idle_timeout))
+                        return
+        else:
+            raise ValueError("Return code is {}.".format(streaming_response.status))
 
     def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None):
         """
@@ -141,8 +138,8 @@ class BaseAPI(object):
             base64string = base64.b64encode(bytes("{}:{}".format(self.api_key, self.secret), "utf-8")).decode("utf-8")
             headers["Authorization"] = "Basic %s" % base64string
 
-        connection.request(method=method.upper(), url=url, headers=headers, body=data)
-        resp = connection.get_response()
+        resp = connection(method=method.upper(), url=url, headers=headers, body=data)
+        # resp = connection.get_response()
 
         return resp
 
@@ -197,16 +194,13 @@ class BaseAPI(object):
             raise ValueError("Return code is {}.".format(response.status_code))
 
     def inserts_stream(self, stream_name, rows):
-        body = '{{"target":"{}"}}'.format(stream_name)
-        for row in rows:
-            body += '\n{}'.format(json.dumps(row))
-
-        parsed_uri = urlparse(self.url)
+        #parsed_uri = urlparse(self.url)
         url = "{}/{}".format(self.url, "inserts-stream")
         headers = deepcopy(self.headers)
-        with HTTPConnection(parsed_uri.netloc) as connection:
-            connection.request("POST", url, bytes(body, "utf-8"), headers)
-            response = connection.get_response()
+
+        result = None
+        for row in rows:
+            response = httpx.post(url, data=row, headers=headers)
             result = response.read()
 
         result_str = result.decode("utf-8")

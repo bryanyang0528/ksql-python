@@ -1,4 +1,6 @@
 requests
 six
 urllib3
+httpx==0.23.0
+httpx[http2]
 hyper

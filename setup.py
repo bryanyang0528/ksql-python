@@ -21,7 +21,7 @@ def get_install_requirements(path):
     ]
 
 # Get version from __init__.py file
-VERSION = "0.10.2"
+VERSION = "0.11.0"
 
 here = os.path.dirname(__file__)
 
@@ -33,7 +33,8 @@ setuptools_kwargs = {
 	    'requests',
 		'six',
 		'urllib3',
-        'hyper'
+        'httpx',
+        'httpx[http2]'
     ],
     'zip_safe': False,
 }
@@ -46,8 +47,8 @@ setup(
     version=VERSION,
     description="A Python wrapper for the KSQL REST API",
     long_description=README,
-    author="Bryan Yang",
-    author_email="kenshin200528@gmail.com",
+    author="Bryan Yang / Dogukan Celik",
+    author_email="kenshin200528@gmail.com / dogukan.celik@btslabs.ai",
     url="https://github.com/bryanyang0528/ksql-python",
     license="MIT License",
     packages=[
@@ -67,6 +68,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     **setuptools_kwargs
