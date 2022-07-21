@@ -27,6 +27,7 @@ class BaseAPI(object):
         self.headers = {
             'Content-Type': 'application/vnd.ksql.v1+json; charset=utf-8',
         }
+        self.cert = kwargs.get("cert")
 
     def get_timout(self):
         return self.timeout
@@ -109,9 +110,11 @@ class BaseAPI(object):
         Process streaming incoming data.
 
         """
+
         streaming_response = self._request(
             endpoint="query", sql_string=query_string, stream_properties=stream_properties
         )
+
         start_idle = None
 
         if streaming_response.code == 200:
@@ -130,7 +133,7 @@ class BaseAPI(object):
 
     def get_request(self, endpoint):
         auth = (self.api_key, self.secret) if self.api_key or self.secret else None
-        return requests.get(endpoint, headers=self.headers, auth=auth)
+        return requests.get(endpoint, headers=self.headers, auth=auth, verify=self.cert)
 
     def _request2(self, endpoint, connection, body, method="POST", encoding="utf-8"):
         url = "{}/{}".format(self.url, endpoint)
@@ -167,7 +170,7 @@ class BaseAPI(object):
         req = urllib.request.Request(url=url, data=data, headers=headers, method=method.upper())
 
         try:
-            r = urllib.request.urlopen(req, timeout=self.timeout)
+            r = urllib.request.urlopen(req, timeout=self.timeout, cafile=self.cert)
         except urllib.error.HTTPError as http_error:
             try:
                 content = json.loads(http_error.read().decode(encoding))
@@ -184,7 +187,7 @@ class BaseAPI(object):
         data = json.dumps(body).encode("utf-8")
         url = "{}/{}".format(self.url, "close-query")
 
-        response = requests.post(url=url, data=data)
+        response = requests.post(url=url, data=data, verify=self.cert)
 
         if response.status_code == 200:
             logging.debug("Successfully canceled Query ID: {}".format(query_id))
@@ -220,7 +223,7 @@ class BaseAPI(object):
 
         return return_arr
 
-    @staticmethod
+    @ staticmethod
     def retry(exceptions, delay=1, max_retries=5):
         """
         A decorator for retrying a function call with a specified delay in case of a set of exceptions
@@ -235,7 +238,7 @@ class BaseAPI(object):
         """
 
         def outer_wrapper(function):
-            @functools.wraps(function)
+            @ functools.wraps(function)
             def inner_wrapper(*args, **kwargs):
                 final_excep = None
                 for counter in range(max_retries):

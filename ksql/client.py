@@ -8,13 +8,16 @@ from ksql.utils import process_query_result
 class KSQLAPI(object):
     """ API Class """
 
-    def __init__(self, url, max_retries=3, check_version=True, **kwargs):
+    def __init__(self, url, max_retries=3, check_version=True, ** kwargs):
         """
         You can use a Basic Authentication with this API, for now we accept the api_key/secret based on the Confluent
         Cloud implementation. So you just need to put on the kwargs the api_key and secret.
         """
         self.url = url
+
         self.sa = SimplifiedAPI(url, max_retries=max_retries, **kwargs)
+
+        self.check_version = check_version
         if check_version is True:
             self.get_ksql_version()
 
@@ -57,7 +60,7 @@ class KSQLAPI(object):
                 encoding=encoding,
                 chunk_size=chunk_size,
                 stream_properties=stream_properties,
-                idle_timeout=idle_timeout,
+                idle_timeout=idle_timeout
             )
 
             yield from process_query_result(results, return_objects)
