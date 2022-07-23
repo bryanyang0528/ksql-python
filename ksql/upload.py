@@ -46,9 +46,6 @@ class FileUpload(object):
                     yield rule
                     rule = ""
 
-            if rule[-1:] != ";":
-                raise InvalidQueryError(rule)
-
     def checkExtension(self, filename):
         ext = os.path.splitext(filename)[-1].lower()
 
