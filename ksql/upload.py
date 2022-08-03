@@ -10,7 +10,7 @@ class FileUpload(object):
     def __init__(self, url, **kwargs):
         """ Instantiate the url pointer and the client object """
         self.url = url
-        self.client = KSQLAPI(url)
+        self.client = KSQLAPI(url, **kwargs)
 
     def upload(self, ksqlfile):
         """
