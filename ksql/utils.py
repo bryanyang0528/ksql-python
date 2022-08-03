@@ -81,7 +81,7 @@ def parse_columns(columns_str):
 
 
 def process_row(row, column_names):
-    row = row.replace(",\n", "").replace("]\n", "")
+    row = row.replace(",\n", "").replace("]\n", "").rstrip("]")
     row_obj = json.loads(row)
     if "finalMessage" in row_obj:
         return None
