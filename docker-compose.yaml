@@ -9,13 +9,20 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   broker:
     image: confluentinc/cp-enterprise-kafka:5.5.0
     hostname: broker
     container_name: broker
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "29092:29092"
     environment:
@@ -27,27 +34,42 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: kafka-topics --bootstrap-server broker:9092 --list
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 20s   
 
   schema-registry:
     image: confluentinc/cp-schema-registry:5.5.0
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
-      - zookeeper
-      - broker
+      zookeeper:
+        condition: service_healthy
+      broker:
+        condition: service_healthy
     ports:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
+    healthcheck:
+      test: curl --output /dev/null --silent --head --fail http://schema-registry:8081/subjects
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   ksqldb-server:
     image: confluentinc/ksqldb-server:0.10.1
     hostname: ksqldb-server
     container_name: ksqldb-server
     depends_on:
-      - broker
-      - schema-registry
+      broker:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
     ports:
       - "8088:8088"
     volumes:
@@ -72,6 +94,12 @@ services:
       KSQL_CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
       KSQL_CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       KSQL_CONNECT_PLUGIN_PATH: "/usr/share/kafka/plugins"
+    healthcheck:
+      test: nc -z localhost 8088 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   ksqldb-cli:
     image: confluentinc/ksqldb-cli:0.10.1
