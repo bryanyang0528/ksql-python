@@ -3,7 +3,7 @@ attrs==19.3.0
 avro-python3==1.9.2.1
 backcall==0.2.0
 black==19.10b0
-certifi==2018.4.16
+certifi==2022.12.7
 chardet==3.0.4
 click==7.1.2
 codecov==2.1.8
