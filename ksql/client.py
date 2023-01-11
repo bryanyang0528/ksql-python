@@ -47,13 +47,14 @@ class KSQLAPI(object):
 
     def query(self, query_string, encoding="utf-8", chunk_size=128, stream_properties=None, idle_timeout=None, use_http2=None, return_objects=None):
         if use_http2:
-            yield from self.sa.query2(
+            for result in self.sa.query2(
                 query_string=query_string,
                 encoding=encoding,
                 chunk_size=chunk_size,
                 stream_properties=stream_properties,
                 idle_timeout=idle_timeout,
-            )
+            ):
+                yield result
         else:
             results = self.sa.query(
                 query_string=query_string,
@@ -63,7 +64,8 @@ class KSQLAPI(object):
                 idle_timeout=idle_timeout
             )
 
-            yield from process_query_result(results, return_objects)
+            for query_result in process_query_result(results, return_objects):
+                yield query_result
 
     def close_query(self, query_id):
         return self.sa.close_query(query_id)
