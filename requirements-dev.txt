@@ -14,7 +14,7 @@ fastavro==0.23.6
 flake8==3.8.3
 idna==2.6
 importlib-metadata==1.7.0
-ipython==7.16.3
+ipython==8.10.0
 ipython-genutils==0.2.0
 jedi==0.17.2
 ksql==0.5.1.1
