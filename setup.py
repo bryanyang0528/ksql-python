@@ -4,13 +4,6 @@
 import os
 
 from setuptools import setup
-from distutils.version import LooseVersion
-import pip
-
-if LooseVersion(pip.__version__) >= "10.0.0":
-    from pip._internal.req import parse_requirements
-else:
-    from pip.req import parse_requirements
 
 def get_install_requirements(path):
     content = open(os.path.join(os.path.dirname(__file__), path)).read()
